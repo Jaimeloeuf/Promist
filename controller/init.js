@@ -1,7 +1,5 @@
-'use strict'; // Is this still needed?
+'use strict'; // Enforce use of strict verion of JavaScript
 
-// Check if this style of writing default module export is correct.
-// What is the difference between this and export default?
 module.exports = () => {
 	/*
 	call database and retrieve the list of promists in async manner

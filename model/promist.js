@@ -1,3 +1,4 @@
+'use strict'; // Enforce use of strict verion of JavaScript
 
 // Since promise is a reserved keyword, I will use promist here instead
 export default class Promist {
@@ -5,12 +6,13 @@ export default class Promist {
 		this.date = Date.now(); // Determine date/time format
 		this.title = title; // Set title
 
-		// Can a contructor in Javascript return a value?
-		// Because if I do checking here and relise the user inputted crap, I want to be
-		// able to reject it and ask the user to input again. Which I will need to either
-		// do by rejecting val here and somehow call new_promist.js screen agn using
-		// smth like a while loop with a semi-colon. Or I can add input checking and
-		// sanitization code into the UI screen code. Which will feel weird in the architecture
+		/* @Ques for self
+		Can a contructor in Javascript return a value?
+		Because if I do checking here and relise the user inputted crap, I want to be
+		able to reject it and ask the user to input again. Which I will need to either
+		do by rejecting val here and somehow call new_promist.js screen agn using
+		smth like a while loop with a semi-colon. Or I can add input checking and
+		sanitization code into the UI screen code. Which will feel weird in the architecture */
 
 		setDescription(description);
 		set5W1H(fwoh);
@@ -24,6 +26,14 @@ export default class Promist {
 
 	setReminder(reminder) {
 		// set a call back that will call me at a set time?
+
+		// Should the reminder thing be an object?
+
+		const currentTime = Date.now();
+		if (reminder.time < currentTime) // If reminder due time is set before the current time
+			throw error;
+		else
+			setTimeout(callback, reminder.time)
 	}
 
 	setDescription(description) {
