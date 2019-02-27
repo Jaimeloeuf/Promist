@@ -1,4 +1,3 @@
-
 model:
 	- promist.js
 
