@@ -1,6 +1,5 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
-
 /*	@Doc
 	Main server app instance module.
 	Exports the created server instance out for the routes in the routes folder to access it.
@@ -20,6 +19,7 @@ const db = require('./db');
 /* Global variables */
 const port = 3000;
 
+// Static assets will be served using something else like NGINX
 // Allow express to serve static content to the User from the static assets directory
 app.use(express.static('static'))
 

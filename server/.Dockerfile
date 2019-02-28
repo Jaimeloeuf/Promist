@@ -1,5 +1,4 @@
 # This is the Dockerfile for the Node server app service. Run this file individually for each service
-# All the services will be spawned by and tied together by the docker-compose.yaml file
 
 FROM node
 
@@ -8,42 +7,24 @@ EXPOSE 80
 # Maintainer for this Dockerfile
 MAINTAINER jaimeloeuf@gmail.com
 
-# Create app directory
+# Create app directory and set as working directory
 WORKDIR /app
 
-COPY package.json /app
-RUN npm install
-COPY . /app
+# A wildcard is used to ensure both package.json AND package-lock.json are copied where available (npm@5+)
+COPY package*.json /app
 
-
-
-
-
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-
-
-# Run the commands needed to build the image
-RUN apt-get update -yqq
 # Install NPM dependencies and build code for production only
-RUN npm install --only=production
+RUN npm install
+# RUN npm install --only=production
 
 # Bundle app source
-COPY . .
+COPY . /app
+# Test if the below works too
+# COPY . .
 
-# Define the command to run your app using CMD which defines your runtime.
-# Use "npm start" which will run your nodeJS app using the run command you specified in package.json
-ENTRYPOINT ["npm", "start"]
-
-
-
-
-
-
-
+# Run node server with "npm start" to use the start script specified in package.json
+# Shell form of ENTRYPOINT used to ignore any CMD or docker run command line arguments and run the image as a single executable
+ENTRYPOINT npm start
 
 # To build and run the image from this Dockerfile
 # docker build -t Promist-Server .
