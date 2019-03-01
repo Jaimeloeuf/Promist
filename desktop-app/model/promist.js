@@ -23,7 +23,6 @@ export default class Promist {
 	/* A Promist object should contain a
 	who, what, when, where, why, how, as part of its state.
 	Which will be defined in a object called fwoh or 5W1H */
-
 	setReminder(reminder) {
 		// set a call back that will call me at a set time?
 

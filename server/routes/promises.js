@@ -1,8 +1,13 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc
-	
+	API endpoint routes for promises
 */
+
+// Import in the server app
+
+// Import db wrapper
+const db = require('mongoose');
 
 app.get('/user/:userID/promises/all', (req, res) => {
 	req.params.userID;
