@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "promist-service",
   "version": "0.0.1",
-  "description": "Backend Service for the Promist app",
+  "description": "promist-service for the Promist app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,9 +17,7 @@
   },
   "homepage": "https://github.com/Jaimeloeuf/Promist#readme",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "express": "^4.16.4",
-    "jsonwebtoken": "^8.5.0",
-    "mariadb": "^2.0.3"
+    "jsonwebtoken": "^8.5.0"
   }
 }
