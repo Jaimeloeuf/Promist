@@ -11,19 +11,13 @@ const express = require('express');
 const app = express();
 module.exports.app = app;
 
-const http = require('http').Server(app);
-
 const { print, write, error, JSON_string } = require('./utils');
 
 // Finalhandler module to deal with responding back to the client and closing the connection
 
 
 /* Global variables */
-const port = 3000;
-
-// Static assets will be served using something else like NGINX
-// Allow express to serve static content to the User from the static assets directory
-app.use(express.static('static'))
+const port = 3000; // To ber read from env
 
 // Ping Route to check server status
 app.get('/ping', (req, res, next) => {
@@ -53,5 +47,4 @@ app.use((err, req, res, next) => {
 	res.status(500).send('Something broke!')
 });
 
-// Make the HTTP server listen to the port specified by the global variable
-http.listen(port, () => print(`Server listening to port ${port}`));
+app.listen(port, () => print(`Server listening to port ${port}`));
