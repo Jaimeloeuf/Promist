@@ -41,6 +41,7 @@ module.exports.createToken = (ctx, setToken = true, cookie = true) =>
 		});
 	});
 
+
 /*
 Verify is to verify the token produce the decrypted token
 The callback is called with the decoded payload if the signature is valid and optional
@@ -66,6 +67,7 @@ module.exports.verify = (ctx) =>
 		});
 	});
 
+	
 // FORMAT OF TOKEN
 // Authorization: Bearer <access_token>
 function getToken(ctx) {
