@@ -1,9 +1,7 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc
-	Main server app instance module.
-	Exports the created server instance out for the routes in the routes folder to access it.
-	This module only holds some misc. routes like ping and error handling routes like for 404.
+	Server app instance module that handles incoming email sending requests from other services
 */
 
 
@@ -27,8 +25,6 @@ app.get('/ping', (req, res, next) => {
 	res.end(JSON_string({
 		// status: 'Server Up',
 		status: 200,
-		// Number of active user connections with the server currently
-		active_users: get_active_users(),
 		// Current server response latency of the /ping request
 		latency: get_current_latency()
 	}));
