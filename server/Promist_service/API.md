@@ -6,8 +6,6 @@ The "api" in the URLs will have a version attached to it.
 
 ## GET
 
-/user/:userID
-    Get the general stat of the user with :userID
 /user/:userID/promises/all
     Get the full lists of promises for the user with :userID
 /user/:userID/promises/:promiseID
@@ -19,6 +17,9 @@ The "api" in the URLs will have a version attached to it.
     Create a new Promise entry for the user with :userID
 
 ## PUT
+
+/user/:userID/promises/:promiseID
+    Update the promise with :promiseID for the user with :userID
 
 ## DELETE
 
