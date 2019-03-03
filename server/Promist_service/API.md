@@ -4,6 +4,8 @@ The APIs will be organized by HTTP request methods
 All URLs will have, "/api/" prepended to it.
 The "api" in the URLs will have a version attached to it.
 
+MvP of the product will be the basic CRUD operations for the Promises
+
 ## GET
 
 /user/:userID/promises/all
