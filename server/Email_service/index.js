@@ -7,6 +7,7 @@
 
 const express = require('express');
 const app = express();
+const send_mail = require('./mail').send;
 const { print, error, JSON_string } = require('./utils');
 
 // Finalhandler module to deal with responding back to the client and closing the connection
@@ -14,6 +15,16 @@ const { print, error, JSON_string } = require('./utils');
 
 /* Global variables */
 const port = 3000; // To be read from env
+
+// Add the body parser middleware to parse application/json type post data
+app.use(express.json());
+
+app.post('/send', (req, res) => {
+	// Request body should be JSON string parsed by express.json() for send_mail function
+	send_mail(req.body)
+	// End the HTTP req/res cycle after call to send_mail function
+	res.end();
+});
 
 // Ping Route to check server status
 app.get('/ping', (req, res, next) => {
