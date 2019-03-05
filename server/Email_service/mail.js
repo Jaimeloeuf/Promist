@@ -5,7 +5,6 @@
 
     The service user can construct a JS object like the mailOptions obj below and send it to this service over
     HTTP serialization or gRPC, which will then deserialize it back to JS obj to use with the mailer.sendmail
-
     
     Note that the below method that utilizes nodemailer, relies on a email server to do the work, the code below is just creating a client to connect
     to and use the email server to send emails. Perhaps explore the use of "sendmail" package where no smtp server is required.
@@ -13,7 +12,7 @@
 
 const nodemailer = require('nodemailer');
 const { mail_config } = require('./mail_config');
-const { print } = require('./utils');
+const { print, error } = require('./utils');
 
 // A fixed domain name that will be used for the sender options
 const email_domain_addr = '@promist.io';
@@ -66,24 +65,27 @@ function construct_mail_options(options) {
     }
 }
 
-// mailer.sendMail(mailOptions, (error, info) => {
-    //     if (error)
-//         console.log(error);
-//     else
-//         console.log('Email sent: ' + info.response);
-// });
+// Callback function for when the email has been successfully sent
+function success_cb(info) {
 
-// Below is currying? It works thos but hard to read
-const compose = (error) => (info) => error ? error : info;
-const sendmail_cb = (error, info) => print(compose(error)(info))
-// mailer.sendMail(mailOptions, sendmail_cb);
+    // For now just log to console
+    print('Email sent:\n' + info);
+    // print('Email sent: ' + info.response);
+}
+// Callback function for when the email request has failed
+function error_cb(err) {
 
+    // For now just log to console
+    error(err);
 
+    // Write the error to a central error logging service
+}
+
+const sendmail_cb = (err, info) => err ? error_cb(err) : success_cb(info);
 
 /* The service user will call the send function, which wil basically construct the mail options object and place it into the queue
 THere will be a loop that constantly checks the queue and send things out.
 Instead of constantly checking */
 
-// inherit the input and spread it out to the function call of another function?
-// Function used to send mail out
+// Send function acts as a wrapper function by composing the sendMail method with the construct_mail_options function
 module.exports.send = (options) => mailer.sendMail(construct_mail_options(options), sendmail_cb);

@@ -18,6 +18,7 @@ const port = 3000; // To be read from env
 // Add the body parser middleware to parse application/json type post data
 app.use(express.json());
 
+// Route to post email requests to, with optional requests for the email service to respond back when the service is performed
 app.post('/send', (req, res) => {
 	// Request body should be JSON string parsed by express.json() for send_mail function
 	send_mail(req.body);
