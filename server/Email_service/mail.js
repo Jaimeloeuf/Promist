@@ -58,24 +58,16 @@ function construct_mail_options(options) {
         subject,
 
         // Create the message body with the email template together with the given content
-        html: render_template(content)
+        // html: render_template(content)
+        html: content
         /* The email sent should be a HTML doc, should css be embedded in or included using another file? Or minified?
         The html or text that the function caller specified will be placed in the middle of the HTML email template.
         All emails will be using the same template that involves logo, contact-us and more. */
     }
 }
 
-/* The service user will call the send function, which wil basically construct the mail options object and place it into the queue
-THere will be a loop that constantly checks the queue and send things out.
-Instead of constantly checking */
-
-// inherit the input and spread it out to the function call of another function?
-// Function used to send mail out
-module.exports.send = (options) => mailer.sendMail(construct_mail_options(options), sendmail_cb);
-
-
 // mailer.sendMail(mailOptions, (error, info) => {
-//     if (error)
+    //     if (error)
 //         console.log(error);
 //     else
 //         console.log('Email sent: ' + info.response);
@@ -84,4 +76,14 @@ module.exports.send = (options) => mailer.sendMail(construct_mail_options(option
 // Below is currying? It works thos but hard to read
 const compose = (error) => (info) => error ? error : info;
 const sendmail_cb = (error, info) => print(compose(error)(info))
-mailer.sendMail(mailOptions, sendmail_cb);
+// mailer.sendMail(mailOptions, sendmail_cb);
+
+
+
+/* The service user will call the send function, which wil basically construct the mail options object and place it into the queue
+THere will be a loop that constantly checks the queue and send things out.
+Instead of constantly checking */
+
+// inherit the input and spread it out to the function call of another function?
+// Function used to send mail out
+module.exports.send = (options) => mailer.sendMail(construct_mail_options(options), sendmail_cb);

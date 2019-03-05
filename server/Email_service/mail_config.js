@@ -5,4 +5,4 @@
 */
 
 // Read the mail_config JSON file and parse it before assigning to mail_config variable
-module.exports.mail_config = require('./mail_config');
+module.exports.mail_config = require('./mail_config.json');
