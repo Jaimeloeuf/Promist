@@ -11,7 +11,7 @@
 */
 
 const nodemailer = require('nodemailer');
-const { mail_config } = require('./mail_config');
+const { mail_config } = require('./config');
 const { print, error } = require('./utils');
 
 // A fixed domain name that will be used for the sender options
