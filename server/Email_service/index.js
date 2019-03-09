@@ -2,6 +2,9 @@
 
 /*	@Doc
 	Server app instance module that handles incoming email sending requests from other services
+	
+	This service will be upgraded to use KoaJS
+	If koa JS used, body-parser package may be needed
 */
 
 
@@ -12,18 +15,11 @@ const { port } = require('./config');
 const { print, error, JSON_string } = require('./utils');
 // Finalhandler module to deal with responding back to the client and closing the connection
 
-// Add the body parser middleware to parse application/json type post data
-// If koa JS used, body-parser package may be needed
-app.use(express.json());
-
-app.use((req, res, next) => {
-	print('HI new req received');
-	next(req, res);
-})
 
 // Route to post email requests to, with optional requests for the email service to respond back when the service is performed
-app.post('/send', (req, res) => {
-	// Request body should be JSON string parsed by express.json() for send_mail function
+app.post('/send', express.json(), (req, res) => {
+	// Request body is the JSON string parsed by express.json() for send_mail function
+	// The bodyParser middleware will only be used for the '/send' route
 	send_mail(req.body);
 	// End the HTTP req/res cycle after call to send_mail function
 	res.end();
