@@ -1,7 +1,7 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc
-	
+	Module that exports functions to verify user credentials against those stored in the DB
 */
 
 const bcrypt = require('bcryptjs');
@@ -30,6 +30,19 @@ bcrypt.compare("not_bacon", hash, function (err, res) {
 bcrypt.compare("B4c0/\/", hash).then((res) => {
     // res === true
 });
+
+/*  Functions needed:
+    - Password verification against the has from database
+    - Create Hash from password and store in Database
+    - 
+*/
+
+function create_hash(password) {
+    // Auto-gen a salt and hash:
+    bcrypt.hash(password, 8, (err, hash) => {
+        // Call the DB to store this password
+    });
+}
 
 // Given a userID and a password, verify if password is correct
 function verify(userID, password) {

@@ -11,28 +11,21 @@ const express = require('express');
 const app = express();
 module.exports.app = app;
 
-const { print, write, error, JSON_string } = require('./utils');
-
+const { port } = require('./config');
+const { print, error, JSON_string } = require('./utils');
 // Finalhandler module to deal with responding back to the client and closing the connection
 
-
-/* Global variables */
-const port = 3000; // To ber read from env
 
 // Ping Route to check server status
 app.get('/ping', (req, res, next) => {
 	/*	Things to return to client
-		- Number of active connections with socket.io
-		- The number of multiplayer game-rooms alive
-		- Load of the server?
+		- Current number of users in DB
+		- Load of the server
 	*/
 	res.end(JSON_string({
-		// status: 'Server Up',
 		status: 200,
-		// Number of active user connections with the server currently
-		active_users: get_active_users(),
 		// Current server response latency of the /ping request
-		latency: get_current_latency()
+		// latency: get_current_latency()
 	}));
 });
 
