@@ -1,5 +1,11 @@
 # README for Admin service
 
+The admin service will provide services that are only accessible by admins.
+All the routes are secured with JWT verifications.
+Admins must sign in first using the Auth Service to obtain a JWT and a refresh token, before accessing admin service routes.
+
+There will be a database to store data for data-analytics and diagnostics services that the admin can access
+
 ## Features to implement
 
 Emergency feature to off all online services. Stopping all sync actions, but allowing native apps to still continue working without sync features.

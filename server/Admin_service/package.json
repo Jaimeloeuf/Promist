@@ -1,0 +1,24 @@
+{
+  "name": "admin-service",
+  "version": "0.0.1",
+  "description": "admin-service for the Promist app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jaimeloeuf/Promist.git"
+  },
+  "author": "Jaime Loeuf",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/Jaimeloeuf/Promist/issues"
+  },
+  "homepage": "https://github.com/Jaimeloeuf/Promist#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.0"
+  }
+}
