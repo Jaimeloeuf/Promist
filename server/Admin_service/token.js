@@ -42,13 +42,13 @@ module.exports.createToken = (ctx, setToken = true, cookie = true) =>
     });
 
 
-/*
-Verify is to verify the token produce the decrypted token
-The callback is called with the decoded payload if the signature is valid and optional
-expiration, audience, or issuer are valid. Else, it will be called with the error.
+/*  Verify function is used to read and verify the token sent by client
+    The callback is called with the decoded payload if the signature is valid and optional
+    expiration, audience, or issuer are valid if given. Else, it will be called with the error.
 */
 module.exports.verify = (ctx) =>
     new Promise((resolve, reject) => {
+        /* Is the reject method still needed? */
         getToken(ctx) // Get token out of headers into ctx.token property
 
         // Pass in the JWT from the user, the key used to sign the tokens and a callback function
@@ -67,15 +67,12 @@ module.exports.verify = (ctx) =>
         });
     });
 
-
-// FORMAT OF TOKEN
-// Authorization: Bearer <access_token>
+/*  Function to extract token from request header.
+    FORMAT OF TOKEN
+    Authorization: Bearer <access_token>
+*/
 function getToken(ctx) {
     ctx.token = ctx.headers['authorization'].split(' ')[1]; // Split at space and Get token from array
-    // if (typeof ctx.token === 'undefined') // Check if bearer is undefined
-    // 	ctx.setStatusCode(401); // If token does not exist or not sent over, respond with a 401 auth-token not provided
-
-
     // Check if bearer is undefined
     if (typeof ctx.token === 'undefined') {
         ctx.setStatusCode(401); // If token does not exist or not sent over, respond with a 401 auth-token not provided
