@@ -32,6 +32,18 @@ const get_connection = async () => await pool.getConnection();
 const query_db2 = async (conn, query) => await conn.query(query);
 
 
+module.exports = {
+    // Methods that deals with password hashes' CRUD operations
+    get_hash,
+    update_hash,
+
+    // Methods to deal with reading user details
+    get_user,
+    create_user
+}
+
+/* Code below this block comment are example codes */
+
 // Example on how multi query usage would be done
 function query_db3(query) {
     let conn;

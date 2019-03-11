@@ -81,7 +81,7 @@ function getToken(ctx) {
 }
 
 
-/*	What should a JWT contain?   (The client holding on to the JWT will be referred to as the owner of the JWT)
+/*	What should a JWT contain?   (Client holding the JWT will be referred to as the owner)
 	- The owner's Identity, basically declaring who the user is
 	- What are the resources that the owner can access.
 	- Who issused the JWT token to the user
