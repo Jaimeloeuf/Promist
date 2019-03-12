@@ -20,10 +20,8 @@ const get_hash = (userID) => query_db(`select user from userDB with ${userID}`);
 
 // Simple query_db method, not suited if many queries are executed at the same time
 // Get a connection from pool, execute a query and release connection.
+// Is pool.query a sync process? Does this need to be awaited?
 const query_db = (query) => pool.query(query);
-
-query_db("sgsf").catch(res => print(res));
-
 
 // Module exposed function to get a connection thread to the DB for multiple queries
 const get_connection = async () => await pool.getConnection();
@@ -41,6 +39,10 @@ module.exports = {
     get_user,
     create_user
 }
+
+
+
+
 
 /* Code below this block comment are example codes */
 

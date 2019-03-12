@@ -25,72 +25,51 @@ const bcrypt = require('bcryptjs');
 // Import in DB methods for reading and updating password hash from the db module
 const { get_hash, update_hash } = require('./db/db');
 
+/*  Cost factor variable - number of rounds used to generate the salt.
+    Cost factor should be different for normal users VS admins.
+    Admins cost factor should be around 14
+    @Todo read from elsewhere and not pre-defined
+*/
+const cost_factor = 12;
 
-// Variable that defines number of rounds used to generate the salt. To be read from elsewhere instead of being pre-defined
-const salting_rounds = 10;
 
-function create_hash(password) {
-    // Auto-gen a salt and hash:
-    bcrypt.hash(password, 10)
-        .then((hash_string) => db.update_hash(userID, hash_string))
-        .catch(console.error);
-
-        // const composer = (f1) => (f1) => (val) => f1(f2(val));
-        // composer(db.update_hash)(get_user)(userID);
-
-    // Call the DB to store this password
-
+// Given a userID and a password, update hash in the database with the newly hashed password. Returns a boolean indicating operational outcome (success/failure)
+function update_hash(userID, password) {  // Synchronous to the function caller
     try {
-
+        const hash_string = await bcrypt.hash(password, cost_factor);
+        return await db.update_hash(userID, hash_string);
     } catch (err) {
-        // Let error bubble up to the route handler
+        console.error(err);
     }
 }
-
-// Given a userID and a password, verify if password is correct
-function verify(userID, password) {
-    // Get the password hash of user with "userID" from the DataBase
-    db.get_hash(userID);
-
-    // Compare hash with hashed password and return result to the user
-    bcrypt.compare(password, hash, (err, res) => {
-        // res === true
-
-        if (err)
-            return false;
-        return res;
+// Async Update_hash function that returns a promise to the function caller
+const update_hash = (userID, password) =>
+    new Promise((resolve, reject) => {
+        bcrypt.hash(password, cost_factor)
+            // Calling then with the calculated hashstring for the given password
+            .then((hash_string) => db.update_hash(userID, hash_string))
+            // If the DB update_hash method returned correctly, resolve with the result
+            .then(resolve)
+            // If the hashing failed or if the DB update_hash method failed, call reject
+            .then(reject);  // Error Catching will be handled by the function caller
     });
+
+
+
+// Given a userID and a password, verify credentials and return a boolean indicating result
+async function verify(userID, password) {
+    return await bcrypt.compare(password, db.get_hash(userID));
 }
+async function verify(userID, password) {
+    try {
+        const hash_from_db = await db.get_hash(userID);
+        return await bcrypt.compare(password, hash_from_db);
+    } catch (err) {
+        // Log the error
+        // Return fail to the user
 
-
-/* All code below this block comment are example codes */
-
-// To hash a password
-bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash("B4c0/\/", salt, function (err, hash) {
-        // Store hash in your password DB.
-    });
-});
-
-// Auto-gen a salt and hash:
-bcrypt.hash('bacon', 8, function (err, hash) {
-});
-
-// example code using promises based API
-bcrypt.hash(password, 10)
-    .then(console.log)
-    .catch(console.error);
-
-/* To check a password: */
-// Load hash from your password DB.
-bcrypt.compare("B4c0/\/", hash, function (err, res) {
-    // res === true
-});
-bcrypt.compare("not_bacon", hash, function (err, res) {
-    // res === false
-});
-
-// As of bcryptjs 2.4.0, compare returns a promise if callback is omitted:
-bcrypt.compare("B4c0/\/", hash).then((res) => {
-    // res === true
-});
+        /* The only way that this catch block will be entered is if the database throws an error */
+    }
+}
+// Arrow function version of the above function
+const verify = async (userID, password) => await bcrypt.compare(password, db.get_hash(userID));
