@@ -13,7 +13,6 @@
     - Password to hash given password
     - Write password hash to DB given userID
 
-
     The method used is update hash and not set hash because, when a new user entry is
     created, it is created with a default null password, which should be then updated
     with the update_hash method.
