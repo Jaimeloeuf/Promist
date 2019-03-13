@@ -27,21 +27,23 @@ const ctx_for_response = {
 
 createToken(ctx_for_response)
     .then(() => print(ctx_for_response))
-    .then(() => print('\n', ctx_for_response.res_headers['Set-Cookie']))
+    .then(() => print(ctx_for_response.res_headers['Set-Cookie']))
     .catch(print);
 
-/* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
-where verification is needed and not token generation. */
-const ctx_from_request = {
-    headers: {
-        authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJicmFkIiwiZW1haWwiOiJicmFkQGdtYWlsLmNvbSIsImlhdCI6MTU1MjQ1NzAwOSwiZXhwIjoxNTUyNDU3MTA5fQ.f29eK5KW7BBFoqXPy6qMFkgNiBNEjnJWhJCaQAP-cOs'
+
+// Create a time delay to wait for createToken function and its Promise chain have all completed
+setTimeout(() => {
+    /* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
+    where verification is needed and not token generation. */
+    const ctx_from_request = {
+        headers: {
+            authorization: `Bearer ${ctx_for_response.res_headers['Set-Cookie']}`
+        }
     }
-}
 
+    verify(ctx_from_request)
+        .then(print)
+        .catch(print);
+}, 500);
 
-const assert = require('assert');
-assert(true, 'Hi');
-
-// verify(ctx_from_request)
-//     .then(print)
-//     .catch(print);
+// const assert = require('assert');
