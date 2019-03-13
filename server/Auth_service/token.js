@@ -13,22 +13,14 @@
 // Dependencies
 const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 
-// Mock user for testing purposes only. @TODO Remove this code
-const user = {
-    id: 1,
-    username: 'brad',
-    email: 'brad@gmail.com'
-}
-
 // Variables used for signing/verifying tokens. Should be read from env or config file.
 const expiresAfter = '100s';
 const signageKey = 'secret';
 
-// Function caller to provide data for JWT creation. An optional parameter setToken that defaults to true, used to put token into cookies.
+// An optional parameter setToken that defaults to true, can be used to put token into cookies.
 module.exports.createToken = (ctx, setToken = true, cookie = true) =>
     new Promise((resolve, reject) => {
-        // Instead of signing 'user', sign ctx.jwt
-        jwt.sign(user, signageKey, { expiresIn: expiresAfter }, (err, token) => {
+        jwt.sign(ctx.token, signageKey, { expiresIn: expiresAfter }, (err, token) => {
             if (err)
                 return reject(err); // Reject as it is internal error.
 
@@ -37,10 +29,17 @@ module.exports.createToken = (ctx, setToken = true, cookie = true) =>
 			How do I erase the previously issused cookie stored on the client? */
             if (setToken)
                 ctx.res_headers['Set-Cookie'] = token;
-            return resolve();
+            // ctx.token = token;
+            return resolve(token);
         });
+        // Synchrnously sign and resolve with token afterwards
+        // return resolve(jwt.sign(user, signageKey, {expiresIn:expiresAfter}));
     });
 
+// Synchronous pure function to sign a payload for the final token
+const create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: expiresAfter });
+
+// Start implementing JWEs
 
 /*  Verify function is used to read and verify the token sent by client
     The callback is called with the decoded payload if the signature is valid and optional
@@ -54,6 +53,7 @@ module.exports.verify = (ctx) =>
         // Pass in the JWT from the user, the key used to sign the tokens and a callback function
         jwt.verify(ctx.token, signageKey, (err, decoded_token) => {
             if (err) {
+                console.log(err);
                 ctx.setStatusCode(403); // Forbidden
                 ctx.newError('Forbidden, invalid auth');
                 // if (err === 'invalid audience') // Only true if you add a audience field in the options object
