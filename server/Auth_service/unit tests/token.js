@@ -13,6 +13,8 @@ const { verify, createToken } = require('../token');
 
 const print = console.log;
 
+/* Ctx object that will mimick Ctx objects before being processed by the createToken method.
+    Before the user have a JWT, and where they just posted their credentials for getting a JWT */
 const ctx_for_response = {
     // Mock user object as payload for testing purposes
     token: {
@@ -28,6 +30,8 @@ createToken(ctx_for_response)
     .then(() => print('\n', ctx_for_response.res_headers['Set-Cookie']))
     .catch(print);
 
+/* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
+where verification is needed and not token generation. */
 const ctx_from_request = {
     headers: {
         authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJicmFkIiwiZW1haWwiOiJicmFkQGdtYWlsLmNvbSIsImlhdCI6MTU1MjQ1NzAwOSwiZXhwIjoxNTUyNDU3MTA5fQ.f29eK5KW7BBFoqXPy6qMFkgNiBNEjnJWhJCaQAP-cOs'

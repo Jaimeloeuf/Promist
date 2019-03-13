@@ -18,7 +18,7 @@ const expiresAfter = '100s';
 const signageKey = 'secret';
 
 // An optional parameter setToken that defaults to true, can be used to put token into cookies.
-module.exports.createToken = (ctx, setToken = true, cookie = true) =>
+const createToken = (ctx, setToken = true, cookie = true) =>
     new Promise((resolve, reject) => {
         jwt.sign(ctx.token, signageKey, { expiresIn: expiresAfter }, (err, token) => {
             if (err)
@@ -45,7 +45,7 @@ const create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: exp
     The callback is called with the decoded payload if the signature is valid and optional
     expiration, audience, or issuer are valid if given. Else, it will be called with the error.
 */
-module.exports.verify = (ctx) =>
+const verify = (ctx) =>
     new Promise((resolve, reject) => {
         /* Is the reject method still needed? */
         getToken(ctx) // Get token out of headers into ctx.token property
@@ -66,6 +66,14 @@ module.exports.verify = (ctx) =>
             return resolve(true); // Resolve with true to indicate verification success
         });
     });
+
+
+module.exports = {
+    createToken,
+    create_token,
+    verify
+}
+
 
 /*  Function to extract token from request header.
     FORMAT OF TOKEN
