@@ -5,9 +5,12 @@
 	This does not handle and authentication. Just token based Identity verification
 
     @TODO
+    - Change the function to accept tokens directly in the parameter instead of Ctx obj
+    - Finnish writing the verification middleware
 	- look into private Keys and stuff like Asymmetric signing and verifying
 	- Create child processes too, to deal with the parsing and signing as it seems like it
-	  will take quite abit of CPU power
+      will take quite abit of CPU power
+    - Start implementing JWEs
 */
 
 // Dependencies
@@ -17,33 +20,57 @@ const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 const expiresAfter = '100s';
 const signageKey = 'secret';
 
-// An optional parameter setToken that defaults to true, can be used to put token into cookies.
-const createToken = (ctx, setToken = true, cookie = true) =>
-    new Promise((resolve, reject) => {
-        jwt.sign(ctx.token, signageKey, { expiresIn: expiresAfter }, (err, token) => {
-            if (err)
-                return reject(err); // Reject as it is internal error.
 
-			/* 	Dealing with tokens:
-			Write token into a cookie for finalHandler to send back to client
-			How do I erase the previously issused cookie stored on the client? */
-            if (setToken)
-                ctx.res_headers['Set-Cookie'] = token;
-            // ctx.token = token;
-            return resolve(token);
-        });
-        // Synchrnously sign and resolve with token afterwards
-        // return resolve(jwt.sign(user, signageKey, {expiresIn:expiresAfter}));
-    });
+/*  Token verification middleware:
+    To be passed in to the routes before the route handlers.
+    If the token is invalid, it will secure the route by automatically ending the req/res cycle
+*/
+function v_mw(req, res, next) {
+
+    // Use this middleware to call the verify function first to make sure JWT is valid
+
+    
+    if (!verify(token)) {
+        // See what is the status code to respond with depending on
+        // why the token is not valid.
+
+        res.end();
+    }
+
+    next();
+}
+
+// Create token function should be a pure function, async or not
+// An optional parameter setToken that defaults to true, can be used to put token into cookies.
+// const createToken = (ctx, setToken = true, cookie = true) =>
+//     new Promise((resolve, reject) => {
+//         jwt.sign(ctx.token, signageKey, { expiresIn: expiresAfter }, (err, token) => {
+//             if (err)
+//                 return reject(err); // Reject as it is internal error.
+
+// 			/* 	Dealing with tokens:
+// 			Write token into a cookie for finalHandler to send back to client
+// 			How do I erase the previously issused cookie stored on the client? */
+//             if (setToken)
+//                 ctx.res_headers['Set-Cookie'] = token;
+//             // ctx.token = token;
+//             return resolve(token);
+//         });
+//     });
 
 // Synchronous pure function to sign a payload for the final token
 const create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: expiresAfter });
 
-// Start implementing JWEs
-
 /*  Verify function is used to read and verify the token sent by client
     The callback is called with the decoded payload if the signature is valid and optional
     expiration, audience, or issuer are valid if given. Else, it will be called with the error.
+
+    The below function is a multi staged function that isnt pure.
+    It reads and extract token from the Ctx object, before verifying it.
+    The functions should be seperated out and be as clean as possible
+
+    As mentioned in above block, to seperate it all into seperate pure functions and
+    chain them together using function composition with a higher level function composer
 */
 const verify = (ctx) =>
     new Promise((resolve, reject) => {
@@ -69,7 +96,7 @@ const verify = (ctx) =>
 
 
 module.exports = {
-    createToken,
+    // createToken,
     create_token,
     verify
 }

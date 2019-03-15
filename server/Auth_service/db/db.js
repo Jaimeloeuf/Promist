@@ -1,7 +1,13 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc
-	
+    Module to expose simple, straightforward pre-defined interfaces for accessing data in the DB
+    
+    @Todo
+    - Decide on the structure of all the functions, like if they are Promise based.. / async/await basied
+    - Build error handling into these functions
+    - Fix the way username and password are passed to the DB to make connections
+    - See if using a DBaaS for this service is better? Something like Azure?
 */
 
 const mariadb = require('mariadb');
