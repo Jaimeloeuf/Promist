@@ -15,6 +15,13 @@ const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 // Variable used for signing/verifying tokens. Should be read from env or config file.
 const signageKey = 'secret';
 
+function middleware (req, res, next) {
+    // Extract the token out from the request object
+    // Verify the token
+    // If token is valid, put the token payload into the res.token property,
+    // and call the next function in the chaining.
+}
+
 /*  Verify function is used to read and verify the token sent by client
     The callback is called with the decoded payload if the signature is valid and optional
     expiration, audience, or issuer are valid if given. Else, it will be called with the error.

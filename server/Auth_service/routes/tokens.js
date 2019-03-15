@@ -23,7 +23,7 @@ function authenticate (req, res, next) {
 }
 
 // Middleware function for creating JWT payload for the client, creating and signing the JWT and finally attaching it for the user to use
-function authenticate (req, res, next) {
+function attach_token (req, res, next) {
 
 }
 

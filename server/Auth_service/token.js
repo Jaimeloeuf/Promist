@@ -29,7 +29,7 @@ function v_mw(req, res, next) {
 
     // Use this middleware to call the verify function first to make sure JWT is valid
 
-    
+
     if (!verify(token)) {
         // See what is the status code to respond with depending on
         // why the token is not valid.
@@ -94,6 +94,14 @@ const verify = (ctx) =>
         });
     });
 
+// Promisified version of the jwt.verify method with Signing key in the closure
+const verify = (token) =>
+    new Promise((resolve, reject) => {
+        jwt.verify(ctx.token, signageKey, (err, decoded_token) => {
+            if (err) return reject(err);
+            return resolve(decoded_token);
+        });
+    });
 
 module.exports = {
     // createToken,
