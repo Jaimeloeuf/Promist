@@ -112,13 +112,13 @@ module.exports = {
     FORMAT OF TOKEN
     Authorization: Bearer <access_token>
 */
-function getToken(ctx) {
-    ctx.token = ctx.headers['authorization'].split(' ')[1]; // Split at space and Get token from array
-    // Check if bearer is undefined
-    if (typeof ctx.token === 'undefined') {
-        ctx.setStatusCode(401); // If token does not exist or not sent over, respond with a 401 auth-token not provided
-        ctx.stop(); // Stop execution if no token given and return faillure to function caller.
-    }
+// getToken function used to retrieve token from the request object
+function getToken(req, res) {
+    req.token = req.headers['authorization'].split(' ')[1]; // Split on space and Get token from array
+    // End the req/res cycle if bearer token is undefined
+    if (typeof req.token === 'undefined')
+        res.status(401).end(''); // If token does not exist or not sent over, respond with a 401 auth-token not provided
+    // ^To update the response message, either with a 401 HTML page or smth
 }
 
 

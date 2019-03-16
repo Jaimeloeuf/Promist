@@ -21,7 +21,8 @@ const ctx_for_response = {
     token: {
         id: 1,
         username: 'brad',
-        email: 'brad@gmail.com'
+        email: 'brad@gmail.com',
+        role: 'user'
     },
     res_headers: {}
 }
@@ -33,6 +34,7 @@ const ctx_for_response = {
 
 const token = create_token(ctx_for_response.token);
 print(token);
+print(token.length);
 
 /* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
 where verification is needed and not token generation. */
@@ -50,5 +52,8 @@ const ctx_from_request = {
 // Below first call should result in an error due to invalid signature
 // verifier(token + 'a')
 verifier(token)
-    .then(print)
+    .then((token) => {
+        print(token);
+        print(token.role);
+    })
     .catch(print);
