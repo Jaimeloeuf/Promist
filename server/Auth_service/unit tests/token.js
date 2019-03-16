@@ -9,7 +9,8 @@
 */
 
 // Destructure the methods out from the module for testing
-const { verify, createToken } = require('../token');
+const { verify, create_token, verifier } = require('../token');
+const assert = require('assert');
 
 const print = console.log;
 
@@ -25,25 +26,29 @@ const ctx_for_response = {
     res_headers: {}
 }
 
-createToken(ctx_for_response)
-    .then(() => print(ctx_for_response))
-    .then(() => print(ctx_for_response.res_headers['Set-Cookie']))
-    .catch(print);
+// createToken(ctx_for_response)
+//     .then(() => print(ctx_for_response))
+//     .then(() => print(ctx_for_response.res_headers['Set-Cookie'])) // Use a set_cookie function to pass in the things to be set
+//     .catch(print);
 
+const token = create_token(ctx_for_response.token);
+print(token);
 
-// Create a time delay to wait for createToken function and its Promise chain have all completed
-setTimeout(() => {
-    /* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
-    where verification is needed and not token generation. */
-    const ctx_from_request = {
-        headers: {
-            authorization: `Bearer ${ctx_for_response.res_headers['Set-Cookie']}`
-        }
+/* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
+where verification is needed and not token generation. */
+const ctx_from_request = {
+    headers: {
+        // authorization: `Bearer ${ctx_for_response.res_headers['Set-Cookie']}`
+        authorization: `Bearer ${token}`
     }
+}
 
-    verify(ctx_from_request)
-        .then(print)
-        .catch(print);
-}, 500);
+// verify(ctx_from_request)
+//     .then(print)
+//     .catch(print);
 
-// const assert = require('assert');
+// Below first call should result in an error due to invalid signature
+// verifier(token + 'a')
+verifier(token)
+    .then(print)
+    .catch(print);

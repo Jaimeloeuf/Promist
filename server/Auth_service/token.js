@@ -15,6 +15,7 @@
 
 // Dependencies
 const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
+const { promisify } = require('util');
 
 // Variables used for signing/verifying tokens. Should be read from env or config file.
 const expiresAfter = '100s';
@@ -39,24 +40,25 @@ function v_mw(req, res, next) {
 
     next();
 }
-
+/* 
 // Create token function should be a pure function, async or not
 // An optional parameter setToken that defaults to true, can be used to put token into cookies.
-// const createToken = (ctx, setToken = true, cookie = true) =>
-//     new Promise((resolve, reject) => {
-//         jwt.sign(ctx.token, signageKey, { expiresIn: expiresAfter }, (err, token) => {
-//             if (err)
-//                 return reject(err); // Reject as it is internal error.
+const createToken = (ctx, setToken = true, cookie = true) =>
+    new Promise((resolve, reject) => {
+        jwt.sign(ctx.token, signageKey, { expiresIn: expiresAfter }, (err, token) => {
+            if (err)
+                return reject(err); // Reject as it is internal error.
 
-// 			/* 	Dealing with tokens:
-// 			Write token into a cookie for finalHandler to send back to client
-// 			How do I erase the previously issused cookie stored on the client? */
-//             if (setToken)
-//                 ctx.res_headers['Set-Cookie'] = token;
-//             // ctx.token = token;
-//             return resolve(token);
-//         });
-//     });
+			// 	Dealing with tokens:
+			// Write token into a cookie for finalHandler to send back to client
+			// How do I erase the previously issused cookie stored on the client?
+            if (setToken)
+                ctx.res_headers['Set-Cookie'] = token;
+            // ctx.token = token;
+            return resolve(token);
+        });
+    });
+ */
 
 // Synchronous pure function to sign a payload for the final token
 const create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: expiresAfter });
@@ -94,19 +96,15 @@ const verify = (ctx) =>
         });
     });
 
+const verifier1 = promisify(jwt.verify);
 // Promisified version of the jwt.verify method with Signing key in the closure
-const verify = (token) =>
-    new Promise((resolve, reject) => {
-        jwt.verify(ctx.token, signageKey, (err, decoded_token) => {
-            if (err) return reject(err);
-            return resolve(decoded_token);
-        });
-    });
+const verifier = (token) => verifier1(token, signageKey);
 
 module.exports = {
     // createToken,
     create_token,
-    verify
+    verify,
+    verifier
 }
 
 
