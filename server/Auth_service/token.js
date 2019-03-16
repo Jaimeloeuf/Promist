@@ -61,7 +61,10 @@ const createToken = (ctx, setToken = true, cookie = true) =>
  */
 
 // Synchronous pure function to sign a payload for the final token
-const create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: expiresAfter });
+// var create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: expiresAfter });
+const jwtSignAsync = promisify(jwt.sign);
+const create_token = (payload) => jwtSignAsync(payload, signageKey, { expiresIn: expiresAfter });
+
 
 /*  Verify function is used to read and verify the token sent by client
     The callback is called with the decoded payload if the signature is valid and optional
@@ -74,9 +77,10 @@ const create_token = (payload) => jwt.sign(payload, signageKey, { expiresIn: exp
     As mentioned in above block, to seperate it all into seperate pure functions and
     chain them together using function composition with a higher level function composer
 */
+/*
 const verify = (ctx) =>
     new Promise((resolve, reject) => {
-        /* Is the reject method still needed? */
+        // Is the reject method still needed?
         getToken(ctx) // Get token out of headers into ctx.token property
 
         // Pass in the JWT from the user, the key used to sign the tokens and a callback function
@@ -95,16 +99,15 @@ const verify = (ctx) =>
             return resolve(true); // Resolve with true to indicate verification success
         });
     });
+*/
 
-const verifier1 = promisify(jwt.verify);
+const jwtVerifyAsync = promisify(jwt.verify);
 // Promisified version of the jwt.verify method with Signing key in the closure
-const verifier = (token) => verifier1(token, signageKey);
+const verify = (token) => jwtVerifyAsync(token, signageKey);
 
 module.exports = {
-    // createToken,
     create_token,
-    verify,
-    verifier
+    verify
 }
 
 

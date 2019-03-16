@@ -9,7 +9,7 @@
 */
 
 // Destructure the methods out from the module for testing
-const { verify, create_token, verifier } = require('../token');
+const { verify, create_token } = require('../token');
 const assert = require('assert');
 
 const print = console.log;
@@ -32,28 +32,59 @@ const ctx_for_response = {
 //     .then(() => print(ctx_for_response.res_headers['Set-Cookie'])) // Use a set_cookie function to pass in the things to be set
 //     .catch(print);
 
-const token = create_token(ctx_for_response.token);
-print(token);
-print(token.length);
+// const token = create_token(ctx_for_response.token);
 
-/* Ctx object that will mimick Ctx objects that are have a token sent to the server by the client,
-where verification is needed and not token generation. */
-const ctx_from_request = {
-    headers: {
-        // authorization: `Bearer ${ctx_for_response.res_headers['Set-Cookie']}`
-        authorization: `Bearer ${token}`
+function promise_version() {
+    // Using the token module's API with Promises
+    create_token(ctx_for_response.token)
+        .then(token => {
+            print(token);
+            print(token.length);
+            return token;
+        })
+        .then(verify)
+        .then((token) => {
+            print(token);
+            print(token.role);
+        })
+        .catch(print);
+}
+
+// Run the promise_version function as it is
+// promise_version();
+
+async function asyncawait_version() {
+    // Using the token module's API with the Async/Await keywords
+    try {
+        const token = await create_token(ctx_for_response.token);
+        print(token);
+        print(token.length);
+        const decoded_token = await verify(token);
+        print(decoded_token);
+        print(decoded_token.role);
+    } catch (err) {
+        print(err);
     }
 }
 
-// verify(ctx_from_request)
-//     .then(print)
-//     .catch(print);
+// Run the asyncawait_version function as it is
+// asyncawait_version();
+
+async function test() {
+    await promise_version();
+    await asyncawait_version();
+    return 'finnished';
+}
+// Call the test function, and when the returned Promise resolves, print out the value resolved
+test()
+    .then(print);
+
 
 // Below first call should result in an error due to invalid signature
 // verifier(token + 'a')
-verifier(token)
-    .then((token) => {
-        print(token);
-        print(token.role);
-    })
-    .catch(print);
+// verifier(token)
+//     .then((token) => {
+//         print(token);
+//         print(token.role);
+//     })
+//     .catch(print);
