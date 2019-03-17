@@ -11,12 +11,13 @@
 // Destructure the methods out from the module for testing
 const { verify, create_token } = require('../token');
 const assert = require('assert');
-
+// Shorthand utility binding
 const print = console.log;
 
-/* Ctx object that will mimick Ctx objects before being processed by the createToken method.
-    Before the user have a JWT, and where they just posted their credentials for getting a JWT */
-const ctx_for_response = {
+
+/*  Req object mimicking req objects before being processed by the create_token method.
+    Before user have a JWT, and they just posted their credentials for a JWT */
+const req = {
     // Mock user object as payload for testing purposes
     token: {
         id: 1,
@@ -27,31 +28,31 @@ const ctx_for_response = {
     res_headers: {}
 }
 
-// createToken(ctx_for_response)
-//     .then(() => print(ctx_for_response))
-//     .then(() => print(ctx_for_response.res_headers['Set-Cookie'])) // Use a set_cookie function to pass in the things to be set
-//     .catch(print);
-
-// const token = create_token(ctx_for_response.token);
 
 function promise_version() {
     // Using the token module's API with Promises
-    create_token(ctx_for_response.token)
-        .then(token => {
-            print(token);
-            print(token.length);
-            return token;
-        })
-        .then(verify)
-        .then((token) => {
-            print(token);
-            print(token.role);
-        })
-        .catch(print);
-}
+    create_token(req.token)
+    .then(token => {
+        print(token);
+        print(token.length);
+        return token;
+    })
+    .then(verify)
+    .then((token) => {
+        print(token);
+        print(token.role);
+    })
+    .catch(print);
 
+    // Below's usage scenario is creating token and putting it in the header for client to use as a Cookie
+    // createToken(req)
+    //     .then(() => print(req))
+    //     .then(() => print(req.res_headers['Set-Cookie'])) // Use a set_cookie function to pass in the things to be set
+    //     .catch(print);
+}
 // Run the promise_version function as it is
 // promise_version();
+
 
 async function asyncawait_version() {
     // Using the token module's API with the Async/Await keywords
@@ -66,13 +67,14 @@ async function asyncawait_version() {
         print(err);
     }
 }
-
 // Run the asyncawait_version function as it is
 // asyncawait_version();
+
 
 async function test() {
     await promise_version();
     await asyncawait_version();
+    // Resolve with the 'finnished' word upon the above 2 promises resolving
     return 'finnished';
 }
 // Call the test function, and when the returned Promise resolves, print out the value resolved
