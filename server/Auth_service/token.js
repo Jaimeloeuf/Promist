@@ -16,9 +16,24 @@
 const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 const { promisify } = require('util');
 
+// Using the promisify method from the util module, Promisify the original jwt methods
+const jwtSignAsync = promisify(jwt.sign);
+const jwtVerifyAsync = promisify(jwt.verify);
+
 // Variables used for signing/verifying tokens. Should be read from env or config file.
 const expiresAfter = '100s';
 const signageKey = 'secret';
+
+/*  Promisified version of jwt.sign method with Signing key and options in its closure.
+    Resolves with the signed JWT, else
+    Rejects with an error.  */
+const create_token = (payload) => jwtSignAsync(payload, signageKey, { expiresIn: expiresAfter });
+
+/*  Promisified version of jwt.verify method with Signing key in its closure.
+    If signature is valid and the optional expiration, audience, or issuer are valid if given
+    Resolves with the decoded token, else
+    Rejects with an error.  */
+const verify = (token) => jwtVerifyAsync(token, signageKey);
 
 
 /*  Token verification middleware:
@@ -36,25 +51,6 @@ function v_mw(req, res, next) {
     }
     next();
 }
-
-
-const jwtSignAsync = promisify(jwt.sign);
-/*
-    Promisified version of the jwt.sign method with Signing key and options in the closure.
-    Resolves with the signed JWT, else
-    Rejects with an error.
-*/
-const create_token = (payload) => jwtSignAsync(payload, signageKey, { expiresIn: expiresAfter });
-
-
-const jwtVerifyAsync = promisify(jwt.verify);
-/*
-    Promisified version of the jwt.verify method with Signing key in the closure.
-    If signature is valid and the optional expiration, audience, or issuer are valid if given
-    Resolves with the decoded token, else
-    Rejects with an error.
-*/
-const verify = (token) => jwtVerifyAsync(token, signageKey);
 
 
 /*  Pure function to extract token from request header and returns it
@@ -80,13 +76,22 @@ function get_token(req, res, next) {
 
 
 module.exports = {
+    // The middleware for extracting token into request object's token property
     get_token,
+
+    // The 2 promisified methods from the 'jwt' module
+    jwtSignAsync,
+    jwtVerifyAsync,
+
+    // The 2 modified versions for token signing and verification with the key in their closures
     create_token,
     verify
 }
 
 
-/*	What should a JWT contain?   (Client holding the JWT will be referred to as the owner)
+/*	Docs and Notes:
+
+    What should a JWT contain?   (Client holding the JWT will be referred to as the owner)
 	- The owner's Identity, basically declaring who the user is
 	- What are the resources that the owner can access.
 	- Who issused the JWT token to the user
