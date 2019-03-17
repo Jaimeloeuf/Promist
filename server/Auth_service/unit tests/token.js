@@ -32,17 +32,17 @@ const req = {
 function promise_version() {
     // Using the token module's API with Promises
     create_token(req.token)
-    .then(token => {
-        print(token);
-        print(token.length);
-        return token;
-    })
-    .then(verify)
-    .then((token) => {
-        print(token);
-        print(token.role);
-    })
-    .catch(print);
+        .then(token => {
+            print(token);
+            print(token.length);
+            return token;
+        })
+        .then(verify)
+        .then((token) => {
+            print(token);
+            print(token.role);
+        })
+        .catch(print);
 
     // Below's usage scenario is creating token and putting it in the header for client to use as a Cookie
     // createToken(req)
@@ -50,14 +50,12 @@ function promise_version() {
     //     .then(() => print(req.res_headers['Set-Cookie'])) // Use a set_cookie function to pass in the things to be set
     //     .catch(print);
 }
-// Run the promise_version function as it is
-// promise_version();
 
 
 async function asyncawait_version() {
     // Using the token module's API with the Async/Await keywords
     try {
-        const token = await create_token(ctx_for_response.token);
+        const token = await create_token(req.token);
         print(token);
         print(token.length);
         const decoded_token = await verify(token);
@@ -67,13 +65,22 @@ async function asyncawait_version() {
         print(err);
     }
 }
-// Run the asyncawait_version function as it is
-// asyncawait_version();
 
 
 async function test() {
+    /*  The 2 Async functions below are called with await keyword, to make sure that
+        the execution pauses at after call until the async function resolves or ends.
+        Thus allowing proper execution scheduling/structuring with the async code.
+    */
     await promise_version();
     await asyncawait_version();
+    /*  If functions are ran without the await keywords, they will not execute in order
+        and thus the results will show both functions printing out the token and length
+        one by one before printing out the decoded token with role one by one.
+    */
+    // promise_version();
+    // asyncawait_version();
+
     // Resolve with the 'finnished' word upon the above 2 promises resolving
     return 'finnished';
 }
@@ -82,9 +89,8 @@ test()
     .then(print);
 
 
-// Below first call should result in an error due to invalid signature
+// Below promise should reject with an error due to invalid signature, as the token's signature has been modified with the additional character
 // verifier(token + 'a')
-// verifier(token)
 //     .then((token) => {
 //         print(token);
 //         print(token.role);
