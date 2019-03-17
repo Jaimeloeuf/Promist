@@ -10,7 +10,6 @@
 
 // Destructure the methods out from the module for testing
 const { verify, create_token } = require('../token');
-const assert = require('assert');
 // Shorthand utility binding
 const print = console.log;
 
@@ -67,10 +66,23 @@ async function asyncawait_version() {
 }
 
 
-// Below promise should reject with an error due to invalid signature, as the token's signature has been modified with the additional character
-// verifier(token + 'a')
-//     .then((token) => {
-//         print(token);
-//         print(token.role);
-//     })
-//     .catch(print);
+async function test() {
+    /*  The 2 Async functions below are called with await keyword, to make sure that
+        the execution pauses at after call until the async function resolves or ends.
+        Thus allowing proper execution scheduling/structuring with the async code.
+    */
+    await promise_version();
+    await asyncawait_version();
+    /*  If functions are ran without the await keywords, they will not execute in order
+        and thus the results will show both functions printing out the token and length
+        one by one before printing out the decoded token with role one by one.
+    */
+    // promise_version();
+    // asyncawait_version();
+
+    // Resolve with the 'finnished' word upon the above 2 promises resolving
+    return 'finnished';
+}
+// Call the test function, and when the returned Promise resolves, print out the value resolved
+test()
+    .then(print);

@@ -5,6 +5,7 @@
 	This does not handle and authentication. Just token based Identity verification
 
     @TODO
+    - Add a function to coerce Auth header to either all lower or upper case
     - Finnish writing the verification middleware
 	- look into private Keys and stuff like Asymmetric signing and verifying
 	- Create child processes too, to deal with the parsing and signing as it seems like it
