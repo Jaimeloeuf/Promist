@@ -17,3 +17,48 @@
         and inform about potential need to reset password again.
 */
 
+// POST email/userID to this route to request for a email password reset
+app.post('/user/forget-password', (req, res, next) => {
+    /*  Read the email/userID from the body.
+        Use express.json with size limit before rejecting request as this is a public route
+        Expected JSON in request body:  { "userID": ... }   */
+    let { userID } = req.body;
+
+    // Get the user object from the DB about this user
+    /* Since we are talking about a userObject, would a NoSQL database be better?
+    SQL DB vs NoSQL DB in terms of speed? One need to look through everything, one have direct address access */
+    const user = db.getUser(userID);
+
+    if (user) {
+        // If the user actually exists and the returned user object is not null
+        // Generate a temporary token and send to the user's email
+
+        const token = create_token({
+            // Sign option here
+            // Allocate the 10 mins expiriy time here too
+        })({
+            // Payload here
+            userID,
+            token_type: 'tmp-identity-token',
+            permissions: 'reset-password'
+        });
+    }
+});
+
+// Route to reset the password after getting the token in the email
+app.get('/auth/reset-password/:token', (req, res, next) => {
+   // Verify token's authenticity and validity (By checking signature and expire time)
+   
+   // Put the token into the Set-Cookie header
+   /* Can we go use a cookie module, to deal with the cookie parsing and the setting */
+
+   // Generate the reset password page with the userID in the token and end response
+});
+
+// API endpoint for posting the new credentials
+// This time round the tmp token is in the cookies
+app.post('/auth/reset-password', (req, res, next) => {
+    // Using the userID in the token, retrieve password hash from database
+
+    // Make sure new password hash is different
+})
