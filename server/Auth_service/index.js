@@ -16,6 +16,9 @@ const { print, error, JSON_string } = require('./utils');
 // Finalhandler module to deal with responding back to the client and closing the connection
 
 
+// @Todo    Route to get public key for authentication from the server
+app.get('/public-key', (req, res, next) => res.end(publicKey));
+
 // Ping Route to check server status
 app.get('/ping', (req, res, next) => {
 	/*	Things to return to client

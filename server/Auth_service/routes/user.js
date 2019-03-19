@@ -2,6 +2,7 @@
 
 /*	@Doc
     API routes for users
+    Routes in this module will provide expose the user CRUD operations via RESTful APIs
     
     @Todo
     - Modify the user route to be JWT protected
@@ -10,7 +11,7 @@
       and then redirects the client to the route that holds their userID
 */
 
-// Route to get the user object back from the DB
+// (READ) Route to get the user object back from the DB
 app.get('/user/:userID', (req, res) => {
     req.params.userID;
 
