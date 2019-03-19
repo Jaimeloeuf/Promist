@@ -61,6 +61,14 @@ async function asyncawait_version() {
         const decoded_token = await verify(token);
         print(decoded_token);
         print(decoded_token.role);
+
+        it('Decoded token matches original token', () => {
+            assert.strictEqual(token, decoded_token);
+        });
+        it('Signature verification process works correctly', () => {
+            assert.strictEqual()
+            // Test that the decoded token is received and also the wrong signature case is detected
+        })
     } catch (err) {
         print(err);
     }
