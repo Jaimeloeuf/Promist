@@ -18,13 +18,30 @@
 */
 
 // Middleware function for authenticating Credentials against those stored in the Database
-function authenticate (req, res, next) {
-
+function authenticate(req, res, next) {
+    
 }
 
 // Middleware function for creating JWT payload for the client, creating and signing the JWT and finally attaching it for the user to use
-function attach_token (req, res, next) {
+function attach_token(req, res, next) {
+    // Base on the results by the authenticate middleware create a token for the user
+    const token = create_token({
 
+    })({
+
+    });
+
+    // Attach token to res object differently based on request client type.
+    //  If browser client, set token into cookie. Else if service or native app, put in auth header
+    if (req.header.type === 'browser') // Make a Regex Search or use a package for this
+    {
+
+    }
+    else { // If service or native apps
+        res.header['Authorization'] = req.token
+    }
+    /*  See how to revoke tokens or revoke cookies that is sent by the browser
+    */
 }
 
 /*  Routes to get token from the service

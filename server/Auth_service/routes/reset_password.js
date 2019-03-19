@@ -31,8 +31,8 @@ app.post('/user/forget-password', (req, res, next) => {
 
     if (user) {
         // If the user actually exists and the returned user object is not null
-        // Generate a temporary token and send to the user's email
 
+        // Generate a temporary token and send to the user's email
         const token = create_token({
             // Sign option here
             // Allocate the 10 mins expiriy time here too
@@ -42,6 +42,12 @@ app.post('/user/forget-password', (req, res, next) => {
             token_type: 'tmp-identity-token',
             permissions: 'reset-password'
         });
+
+        // Generate token for this service for accessing the mail service
+        create_token()
+
+        // Make a AJAX call to the mail service and end the request
+        
     }
 });
 
