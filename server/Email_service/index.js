@@ -4,7 +4,8 @@
 	Server app instance module that handles incoming email sending requests from other services
     
     @Todo
-	Update service to use KoaJS, note that body-parser package need be independently installed
+    - Update service to use KoaJS, note that body-parser package need be independently installed
+    - Modify the service to work around a mail queue.
 */
 
 
@@ -20,28 +21,49 @@ const { print, error, JSON_string } = require('./utils');
     verify if the client with the JWT should be allowed to continue with the route
     Only client with JWTs that specify service roles can access the route handler.
 
-
     Public private key
     The services themselves hold the key and methods for verifying JWTs but not signing JWTs
     Only the Auth Service or Token Service can sign JWTs.
     How to use JWTs to verify identiy of the services?
     If using symmetric key signing then it is easy as the keys are the same
     But with Asymmetric, then the problem arises
+
+    If both the below middleware functions works, keep the async/await version
 */
 function service_identity_checker(req, res, next) {
     // This middleware uses the Promise API
+
+    // Pass in the verify Options. Options should be the same for every incoming request
+    // Should move this verifyOption's instantation out of the function to prevent repeated creation
+    const verifyOption = {
+        "aud": "mail", // Audience field will be the name of this service which will be mail service
+        "iss": "", // The issuser of this JWT should be the Auth or token service of this service mesh
+
+        // The expiry times and dates will be automatically checked and verified by the verify function call
+
+        // Check the subject of the toke, aka the client, or machine that made this request to this service
+    }
+
     verify(req.token)
         .then((token) => {
             // If token is valid, Check if the role is a service
-            if (token.role === 'service')
+            // if (token.role === 'service')
+            if (token.service) // If service property is set as true
                 next(); // Call next middleware to execute
-            else
-                throw new Error('ERR: Forbidden route');
+            else {
+                // Set status code and end the HTTP cycle.
+                // Since this is a purely API only service, it will not respond with HTML, only JSON
+                // Should there still be a response body, since the error code should convey
+                // all the neccessary info about the error already?
+                res.status(403).end(JSON.stringify({ ERR: 'Forbidden route' }));
+            }
         })
         .catch((err) => {
             // Log the error to the error log for analytics
 
-            // End this req/res cycle
+            // Set status code and end the HTTP cycle.
+            // End with the error code specific to the one that the err object indicates
+            res.status(401).end();
         });
 }
 
@@ -90,7 +112,9 @@ app.get('/ping', (req, res, next) => {
 	/*	Things to return to client
 		- Number of email requests queued
 		- Number of email processed and other usage stats
-		- Server/Container Load
+        - Server/Container Load
+        
+        ^ Basically something a uptime or status page by apex.sh
 	*/
     res.end(JSON_string({
         // status: 'Server Up',
