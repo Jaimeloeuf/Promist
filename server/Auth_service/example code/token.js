@@ -9,7 +9,7 @@
 */
 
 // Destructure the methods out from the module for testing
-const { verify, create_token } = require('../token');
+const { create_token, verify_token } = require('../token');
 // Shorthand utility binding
 const print = console.log;
 
@@ -36,7 +36,7 @@ function promise_version() {
             print(token.length);
             return token;
         })
-        .then(verify)
+        .then(verify_token)
         .then((token) => {
             print(token);
             print(token.role);
@@ -57,9 +57,9 @@ async function asyncawait_version() {
         const token = await create_token(req.token);
         print(token);
         print(token.length);
-        const decoded_token = await verify(token);
+        const decoded_token = await verify_token(token);
         print(decoded_token);
-        print(decoded_token.role);
+        print(decoded_token.sub);
     } catch (err) {
         print(err);
     }

@@ -12,6 +12,10 @@
       will take quite abit of CPU power
     - Start implementing JWEs
     - Perhaps the Public/Private key pair should be generated at a interval to change it constantly.
+
+    Edit this module so that the keys are only generated and applied in if this is used by
+    the signing authority.
+    For services that just verify, they should be able to specify to not run those stuff.
 */
 
 // Dependencies
@@ -92,8 +96,10 @@ module.exports = {
     sign,
     verify,
 
-    // Token extraction function
-    // extract_jwt,
+    // JWT and CSRF token extraction methods
+    extract_jwt_in_header,
+    extract_jwt_in_cookie,
+    extract_CSRF_token,
 
     // The 2 curried versions for token signing and verification with the key in their closures
     create_token,
@@ -146,12 +152,6 @@ module.exports = {
     meaning that it should contain all and just enough data to make the request valid and enough
     for generating the response back
     Do not put too much claims or data into the JWT. Only what is needed
-
-
-
-
-    header tells you what is the algorithm used for either signing the token or encrypting the token
-    header also tells what type of token is it. Is it a JWT or is it a JWE?
 
     the payload will say what is the token used for. E.g. identity token / information token...
 */
