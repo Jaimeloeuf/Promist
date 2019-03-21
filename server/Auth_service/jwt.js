@@ -21,47 +21,57 @@ const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 const { promisify } = require('util');
 
 // Using the promisify method from the util module, Promisify the original jwt methods
-const create = promisify(jwt.sign);
+const sign = promisify(jwt.sign);
 const verify = promisify(jwt.verify);
 
-// Function to generate the Public-Private key pairs?
+// Function to generate the Public-Private key pairs, either on startup on every setInterval?
 function key_setup() {
-    // Using the built in crypto modules? Perhaps find a way to generate the values
-    // or if not try to find a library that can generate it for me
+    /* 
+        How does things like iBanking token from banks work. Can I implement that here?
+        So the services do not need to request for the public key from the auth service
+
+        Using the built in crypto modules? Perhaps find a way to generate the values
+        or if not try to find a library that can generate it for me
+    */
 }
 
-/*  Promisified version of jwt.sign method with Signing key and options in its closure.
+// Curried function of the original Promisified sign method
+const create_token = (private_key) => (signOption) => (payload) => sign(payload, private_key, signOption);
+
+// Curried function of the original Promisified verify method
+const verify_token = (public_key) => (verifyOption) => (token) => verify(token, public_key, verifyOption);
+
+
+
+/*  Promisified version of jwt.sign method with the private key for Signing in its closure.
     Resolves with the signed JWT, else
     Rejects with an error.  */
-// const create_token = (payload) => (signOption) => jwtSignAsync(payload, signageKey, signOption);
-// const create_token = (signOption) => (payload) => jwtSignAsync(payload, signageKey, signOption);
-const create_token = (signOption) => (payload) => (signageKey) => jwtSignAsync(payload, signageKey, signOption);
 
 
-/*  Promisified version of jwt.verify method with Signing key in its closure.
+/*  Promisified version of jwt.verify method with the public key for verification in its closure.
     If signature is valid and the optional expiration, audience, or issuer are valid if given
     Resolves with the decoded token, else
     Rejects with an error.  */
-// const verify = (token) => (verifyOption) => jwtVerifyAsync(token, signageKey, verifyOption);
-const verify = (verifyOption) => (token) => jwtVerifyAsync(token, signageKey, verifyOption);
+
 
 
 /*  Pure function to extract token from request header and returns it
     FORMAT OF TOKEN --> Authorization: Bearer <access_token>
-    Split on space, get token from array and return it. */
+    Split on space, get token from array and return it.
+    Express automatically coerces keys in the header object to be lowercase. */
 const extract_token = (req) => req.headers['authorization'].split(' ')[1];
 
 module.exports = {
+    // The 2 promisified methods, Promisified with the Promisfy Util.
+    sign,
+    verify,
+
     // Token extraction function
     extract_token,
 
-    // The 2 promisified methods from the 'jwt' module
-    jwtSignAsync,
-    jwtVerifyAsync,
-
-    // The 2 modified versions for token signing and verification with the key in their closures
+    // The 2 curried versions for token signing and verification with the key in their closures
     create_token,
-    verify
+    verify_token
 }
 
 
