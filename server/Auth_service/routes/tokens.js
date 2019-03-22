@@ -17,9 +17,30 @@
     When user is not on the login page but wants to post creds. for JWTs, then the /token route should be used instead
 */
 
-// Middleware function for authenticating Credentials against those stored in the Database
-function authenticate(req, res, next) {
-    
+const auth = require('../auth');
+
+// Middleware function for authenticating Credentials against Database credentials for user Object
+async function authenticate(req, res, next) {
+    /*  Expected JSON posted from client: {
+            userID: "Unique User ID, or can be the username also",
+            pass: "Password for the user with 'userID'"
+        }
+    */
+
+    try {
+        // Verify credentials to get the user object back and attach to req object to use downstream
+        req.user = await auth.verify_credentials(req.body.userID, req.body.pass);
+
+        // Can I not call next? Will it be called automatically?
+        // next();
+        
+    } catch (err) {
+        // Log the error
+
+        // End this req/res cycle with a failed code for 'unauthorized'
+        res.status(401).send(err);
+        // ^ Should the reason/error for failure be returned to the user? Would it be safe?
+    }
 }
 
 // Middleware function for creating JWT payload for the client, creating and signing the JWT and finally attaching it for the user to use

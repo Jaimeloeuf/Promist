@@ -55,20 +55,40 @@ const update_hash = (userID, password) =>
 
 
 
-// Given a userID and a password, verify credentials and return a boolean indicating result
-async function verify(userID, password) {
-    return await bcrypt.compare(password, db.get_hash(userID));
-}
-async function verify(userID, password) {
-    try {
-        const hash_from_db = await db.get_hash(userID);
-        return await bcrypt.compare(password, hash_from_db);
-    } catch (err) {
-        // Log the error
-        // Return fail to the user
+/*  Function verifies a given set of credentials to return a promise that
+    Resolves with the user object if verified to be correct
+    Rejects with 'ERR: Wrong password' if the password was invalid
+    Rejects with error code from async function calls if either the DB or BCrypt action fails.
+*/
+const verify_credentials = async (userID, password) =>
+    new Promise((resolve, reject) => {
+        try {
+            // Get the whole user object from the DB
+            const user = await db.get_user(userID);
+            // If the password is correct, return the user Object
+            if (await bcrypt.compare(password, user.userID))
+                return resolve(user);
+            else
+                return reject('ERR: Wrong password'); // Reject with error
 
-        /* The only way that this catch block will be entered is if the database throws an error */
-    }
+
+            // Below is the old method, which only verifies if the password is correct
+            // const hash_from_db = await db.get_hash(userID);
+            // return await bcrypt.compare(password, hash_from_db);
+
+            // Single line call of the above old method
+            // return await bcrypt.compare(password, await db.get_hash(userID));
+        } catch (err) {
+            // If the database throws an error or if Bcrypt throws error when comparison fails
+
+            // Log the error, either to log file or to logging service
+
+            // Reject with the error
+            return reject(err);
+        }
+    });
+
+
+module.exports = {
+    verify_credentials,
 }
-// Arrow function version of the above function
-const verify = async (userID, password) => await bcrypt.compare(password, db.get_hash(userID));
