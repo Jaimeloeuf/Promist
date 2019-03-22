@@ -14,7 +14,7 @@
 */
 
 // Dependencies
-var { extract_jwt_in_header, create_token, verify_token, publicKey } = require('./jwt');
+var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = require('./jwt');
 
 /*  User to specify the sign and verify options directly in this module for every service
     The OPTIONS MUST BE DEFINED, and they must be defined inside this module,
@@ -85,6 +85,6 @@ module.exports = {
     create_token,
     verify_token,
 
-    // Expose public key through this module again
-    publicKey
+    // Export method for getting public key with from the jwt module
+    getPublicKey
 }

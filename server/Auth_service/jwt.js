@@ -77,6 +77,7 @@ function apply_keys() {
 // Apply keys into closures of the sign and verify functions and get back publicKey for verification
 const publicKey = apply_keys();
 
+/* Add a function to forge a public key based on a private key? */
 
 /*  Pure function to extract token from request header and returns it
     FORMAT OF TOKEN --> Authorization: Bearer <access_token>
@@ -105,8 +106,8 @@ module.exports = {
     create_token,
     verify_token,
 
-    // The publicKey is also exported for other modules/services to verify the JWT
-    publicKey
+    // getPublicKey is exported for other modules/services to get latest public key to verify the JWT
+    getPublicKey: () => publicKey
 }
 
 

@@ -13,11 +13,14 @@ module.exports.app = app;
 
 const { port } = require('./config');
 const { print, error, JSON_string } = require('./utils');
+const { getPublicKey } = require('./token');
+
 // Finalhandler module to deal with responding back to the client and closing the connection
 
 
-// @Todo    Route to get public key for authentication from the server
-app.get('/public-key', (req, res, next) => res.end(publicKey));
+// Route to get public key for verifying JWTs signed by complimenting private key.
+// Might move the key storage to a centralized publicKey store in the future
+app.get('/public-key', (req, res, next) => res.end(getPublicKey()));
 
 // Ping Route to check server status
 app.get('/ping', (req, res, next) => {
