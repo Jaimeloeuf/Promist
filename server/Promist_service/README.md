@@ -13,6 +13,8 @@ Sometimes is not that we do not want to break our promises, but rather sometimes
 using many hacky solutions such as setting alarm clocks, making reminders on their phone and more..
 
 
+Users may also have promises made to them from other people.
+
 ## Future dev work
 
 - Add a feature that lets user to see their "promise" fulfilment habits, which will be something similiar to iPhone's screen time, where the user can access a dashboard to see things like what percentage of your promises are fulfiled
