@@ -1,7 +1,7 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc
-    This routes module will handle all the API endpoint involved in helping the user reset password
+    This routes module will handle all API endpoints to reset user password
 
     Routes:
     - Endpoint to post userID of the user who wish to reset the password.
@@ -17,8 +17,11 @@
         and inform about potential need to reset password again.
 */
 
+const express = require('express');
+const router = express.Router();
+
 // POST email/userID to this route to request for a email password reset
-app.post('/user/forget-password', (req, res, next) => {
+router.post('/user/forget-password', (req, res, next) => {
     /*  Read the email/userID from the body.
         Use express.json with size limit before rejecting request as this is a public route
         Expected JSON in request body:  { "userID": ... }   */
@@ -52,7 +55,7 @@ app.post('/user/forget-password', (req, res, next) => {
 });
 
 // Route to reset the password after getting the token in the email
-app.get('/auth/reset-password/:token', (req, res, next) => {
+router.get('/auth/reset-password/:token', (req, res, next) => {
    // Verify token's authenticity and validity (By checking signature and expire time)
    
    // Put the token into the Set-Cookie header
@@ -63,8 +66,10 @@ app.get('/auth/reset-password/:token', (req, res, next) => {
 
 // API endpoint for posting the new credentials
 // This time round the tmp token is in the cookies
-app.post('/auth/reset-password', (req, res, next) => {
+router.post('/auth/reset-password', (req, res, next) => {
     // Using the userID in the token, retrieve password hash from database
 
     // Make sure new password hash is different
 })
+
+module.exports = router;
