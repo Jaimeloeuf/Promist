@@ -17,6 +17,11 @@ const { getPublicKey } = require('./token');
 // Finalhandler module to deal with responding back to the client and closing the connection
 
 
+/* Mount all the routers from the route modules onto the Express app */
+app.use('/user', require('./routes/user'));
+app.use(require('./routes/tokens'));
+app.use(require('./routes/reset_password'));
+
 // Route to get public key for verifying JWTs signed by complimenting private key.
 // Might move the key storage to a centralized publicKey store in the future
 app.get('/public-key', (req, res, next) => res.end(getPublicKey()));
