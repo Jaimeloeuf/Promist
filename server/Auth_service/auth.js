@@ -32,25 +32,39 @@ const { get_hash, update_hash } = require('./db/db');
 const cost_factor = 12;
 
 
-// Given a userID and a password, update hash in the database with the newly hashed password. Returns a boolean indicating operational outcome (success/failure)
-function update_hash(userID, password) {  // Synchronous to the function caller
+// Given userID and password, update hash in database with the new password hash.
+async function update_hash(userID, password) {  // Sequenced Async to function caller
     try {
-        const hash_string = await bcrypt.hash(password, cost_factor);
-        return await db.update_hash(userID, hash_string);
+        // Create the hash, insert it into the database and return the result of the insertion
+        return await db.update_hash(userID, await bcrypt.hash(password, cost_factor));
     } catch (err) {
+        // Log the error, either to error logs or to logging service
         console.error(err);
+
+        // If the hashing DB update_hash method failed, return error to function caller
+        return err;
     }
 }
-// Async Update_hash function that returns a promise to the function caller
-const update_hash = (userID, password) =>
+
+// Given userID and password, update hash in database with the new password hash.
+// Sequenced Async to function caller
+const update_hash = async (userID, password) =>
     new Promise((resolve, reject) => {
-        bcrypt.hash(password, cost_factor)
-            // Calling then with the calculated hashstring for the given password
-            .then((hash_string) => db.update_hash(userID, hash_string))
-            // If the DB update_hash method returned correctly, resolve with the result
-            .then(resolve)
-            // If the hashing failed or if the DB update_hash method failed, call reject
-            .then(reject);  // Error Catching will be handled by the function caller
+        try {
+            /*  Create the hash, insert it into the database and return the result of the insertion
+                Note:    
+                - db.update_hash method Verifys if user with 'userID' exists first in the background
+                - Can potentially resolve with an error? If db.update_hash throws an error, will
+                it be caught by the try catch block? since the await call is made in the resolve param.
+            */
+            return resolve(await db.update_hash(userID, await bcrypt.hash(password, cost_factor)));
+        } catch (err) {
+            // Log the error, either to error logs or to logging service
+            console.error(err);
+
+            // If the hashing DB update_hash method failed, return error to function caller
+            return reject(err);
+        }
     });
 
 
@@ -82,6 +96,7 @@ const verify_credentials = async (userID, password) =>
             // If the database throws an error or if Bcrypt throws error when comparison fails
 
             // Log the error, either to log file or to logging service
+            console.error(err);
 
             // Reject with the error
             return reject(err);
@@ -91,4 +106,5 @@ const verify_credentials = async (userID, password) =>
 
 module.exports = {
     verify_credentials,
+    update_hash
 }
