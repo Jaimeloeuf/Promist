@@ -16,11 +16,18 @@
     Edit this module so that the keys are only generated and applied in if this is used by
     the signing authority.
     For services that just verify, they should be able to specify to not run those stuff.
+
+
+    If using the node-forge thing to gen public key from the private key, no need to expose the private
+    keys because in the function of private key generation, can just insert the private key into
+    the node forge function closure.
 */
 
 // Dependencies
 const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 const { promisify } = require('util');
+// Forge crypto package for node (https://www.npmjs.com/package/node-forge)
+const forge = require('node-forge');
 
 // Using the promisify method from the util module, Promisify the original jwt methods
 const sign = promisify(jwt.sign);
@@ -51,6 +58,19 @@ function generateKeys() {
             format: 'pem',
         }
     });
+}
+
+// Below test function implements features with node-forge package that isn't tested yet.
+function test() {
+    // convert PEM-formatted private key to a Forge private key
+    const forgePrivateKey = forge.pki.privateKeyFromPem(privateKey);
+    // get a Forge public key from the Forge private key
+    const forgePublicKey = forge.pki.setRsaPublicKey(forgePrivateKey.n, forgePrivateKey.e);
+    // convert the Forge public key to a PEM-formatted public key
+    const publicKey = forge.pki.publicKeyToPem(forgePublicKey);
+
+    // Given a private key, get a function that can generate a public key
+    const getPublicKey = (forgePrivateKey) => () => forge.pki.publicKeyToPem(forge.pki.setRsaPublicKey(forgePrivateKey.n, forgePrivateKey.e));
 }
 
 
