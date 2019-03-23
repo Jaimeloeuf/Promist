@@ -9,7 +9,6 @@
 
 const express = require('express');
 const app = express();
-module.exports.app = app;
 
 const { port } = require('./config');
 const { print, error, JSON_string } = require('./utils');
