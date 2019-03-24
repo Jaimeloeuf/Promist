@@ -9,7 +9,7 @@
 */
 
 // Destructure the methods out from the module for testing
-const { verify, create_token } = require('../token');
+const { verify_token, create_token } = require('../token');
 const assert = require('assert');
 // Shorthand utility binding
 const print = console.log;
@@ -37,7 +37,7 @@ function promise_version() {
             print(token.length);
             return token;
         })
-        .then(verify)
+        .then(verify_token)
         .then((token) => {
             print(token);
             print(token.role);
@@ -58,7 +58,7 @@ async function asyncawait_version() {
         const token = await create_token(req.token);
         print(token);
         print(token.length);
-        const decoded_token = await verify(token);
+        const decoded_token = await verify_token(token);
         print(decoded_token);
         print(decoded_token.role);
 
@@ -74,6 +74,7 @@ async function asyncawait_version() {
     }
 }
 
+asyncawait_version();
 
 // Below promise should reject with an error due to invalid signature, as the token's signature has been modified with the additional character
 // verifier(token + 'a')
