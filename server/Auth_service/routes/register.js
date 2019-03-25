@@ -4,6 +4,26 @@
     API routes for registering a new user
     All URL endpoints will have a '/user' prefixed to the routes
 
+
+    @Flow (Of registering a new user)
+    - User goes to the register page.
+    - User enters email and click enter, and the details are POSTed to the server via AJAX
+    - Server creates a one time, short lived JWT with permissions to register only and
+      send this JWT to the user's email address as a clickable registration link.
+    - User opens email and clicks on the link
+    - User is sent to the registration page to fill in all user details.
+    - After filling in the details, user clicks enter.
+    - User details are POSTed to server via AJAX
+    - If user is successfully created on the server, server responds with a redirect
+      back to the login page.
+      Else if creation failed, respond with a failure and ask user to try again later.
+
+    ^ Endpoints needed:
+    - POST: email posting endpoint
+    - GET: endpoint where the user goes to with the JWT in the URL directly to fill in details
+        - Server responds with the web-app and JWT in the cookie.
+    - POST: Final endpoint for user to post all user details before being redirected to login page
+
     @Todo
 */
 
@@ -28,6 +48,6 @@ router.post('/register', express.json({ limit: "1kb" }), (req, res) => {
         });
 });
 
-
+router
 
 module.exports = router;
