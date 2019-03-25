@@ -52,5 +52,6 @@ function new_user(user) {
 
 
 module.exports = {
-    get_user
+    get_user,
+    new_user
 }
