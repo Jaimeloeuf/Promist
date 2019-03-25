@@ -5,7 +5,7 @@
     Module that exposes interface to interact with a fake demo in memory Database
     
     @Todo
-    - 
+    - Make userID to use email instead
 */
 
 // User DB will be a object, to simulate a key-value pair store or Document DB
@@ -35,6 +35,20 @@ function get_user(userID) {
     });
 }
 
+// Inserts new user object into the database
+function new_user(user) {
+    return new Promise((resolve, reject) => {
+        /* Perhaps check for email too instead of user ID */
+
+        // Check if the user with user.userID currently exists or not.
+        if (userDB[user.userID])
+            return reject(new Error('ERR: User already exists'));
+
+        // Insert user object into the database as value of the userID key
+        userDB[user.userID] = user;
+        resolve(); // Resolves without anything to end the Promise.
+    });
+}
 
 
 module.exports = {
