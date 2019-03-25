@@ -80,7 +80,7 @@ const verify_credentials = async (userID, password) =>
             // Get the whole user object from the DB
             const user = await db.get_user(userID);
             // If the password is correct, return the user Object
-            if (await bcrypt.compare(password, user.userID))
+            if (await bcrypt.compare(password, user.hash))
                 return resolve(user);
             else
                 return reject('ERR: Wrong password'); // Reject with error
