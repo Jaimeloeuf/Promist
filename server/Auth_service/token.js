@@ -21,7 +21,7 @@ var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = requir
     thus for the jwt module, the signOptions is the first function's parameter */
 
 // Token Signing OPTIONS
-var signOptions = {
+const signOptions = {
     issuer: 'Mysoft corp',
     subject: 'some@user.com',
     // audience: 'https://Promist.io',
@@ -31,7 +31,7 @@ var signOptions = {
 };
 
 // Token verification  OPTIONS
-var verifyOptions = {
+const verifyOptions = {
     issuer: 'Mysoft corp',
     subject: 'some@user.com',
     // audience: 'https://Promist.io',
