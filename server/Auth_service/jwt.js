@@ -1,11 +1,17 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc Module description:
-	This module is a wrapper over the 'jsonwebtoken' package to create/read/sign/verify a token
+    This module is a wrapper over the 'jsonwebtoken' package to create/read/sign/verify a token,
+    but with added automatically generated asymmetric key-pair on startup.
 
     @TODO
+    - Update this module to allow users to split the use of create and verify token. Right now, this
+      module creates both functions for the user. Make it so that the user can just use verify, or
+      just use create. Not all services need both. For the unneeded parts, do not load the needed resources
     - Create 1 Function to extract JWTs from header or token automatically.
     - Add a function to coerce Auth header to either all lower or upper case (No need if using Express)
+        ^ Basically use a regex to specify all case-insensitive?
+        ^ Loop over all the properties in the request header and try to find a match using regex
     - Write unit test for this module
 	- look into private Keys and stuff like Asymmetric signing and verifying
 	- Create child processes too, to deal with the parsing and signing as it seems like it
@@ -27,17 +33,17 @@
 const jwt = require('jsonwebtoken'); // External dependency from NPM by Auth0
 const { promisify } = require('util');
 // Forge crypto package for node (https://www.npmjs.com/package/node-forge)
-const forge = require('node-forge');
+// const forge = require('node-forge');
 
 // Using the promisify method from the util module, Promisify the original jwt methods
 const sign = promisify(jwt.sign);
 const verify = promisify(jwt.verify);
 
 
-// Curried function of the original Promisified sign method
+// Promisified sign method curried
 var create_token = (private_key) => (signOption) => (payload) => sign(payload, private_key, signOption);
 
-// Curried function of the original Promisified verify method
+// Promisified verify method curried
 var verify_token = (public_key) => (verifyOption) => (token) => verify(token, public_key, verifyOption);
 
 
