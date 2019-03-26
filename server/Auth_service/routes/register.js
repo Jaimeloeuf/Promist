@@ -25,6 +25,7 @@
     - POST: Final endpoint for user to post all user details before being redirected to login page
 
     @Todo
+    - Verify if all the status code sent back are right and informative
 */
 
 const express = require('express');
@@ -62,6 +63,35 @@ router.post('/register', express.json({ limit: "500" }), (req, res) => {
 
 
     res.status(200);
+});
+
+// Route to get the static register page. It really depends if the app is a single page app or isit static based with links for navigation
+// If static based then this is needed, else the web-app should just update itself to show the register page without calling server
+router.get('/register', (req, res) => { });
+
+
+router.get('/register/:token', async (req, res) => {
+    /*  @Flow
+        - Verify token sent in the URL
+        - If JWT is valid, redirect to register user details page or, send res to ask client web-app to load that page
+        - Else send back a "Sorry link invalid" with redirect to register page again.
+            ^ Should the redirect be done with the web-app? So server only respond with fail and web-app redirects
+    */
+    const { token } = req.params;
+
+    try {
+        // Decode and verify token
+        const decoded_token = verify_token(token);
+
+        // Send username back to the web-app to display
+        res.send(decoded_token.username);
+    } catch (err) {
+        // Log error to log file or logging service
+
+
+        // Send error back along with error code
+        res.status(401).send(err);
+    }
 });
 
 // POST route that takes user details and insert to DB
