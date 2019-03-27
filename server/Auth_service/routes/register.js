@@ -26,6 +26,9 @@
 
     @Todo
     - Verify if all the status code sent back are right and informative
+    - Should the email posting route, get the email in the URL? Would that be better than using json?
+    - Change the hostname from localhost to the actual hostname.
+        ^ How can this be done automatically? Env variables or?
 */
 
 const express = require('express');
@@ -65,9 +68,42 @@ router.post('/register', express.json({ limit: "500" }), (req, res) => {
     res.status(200);
 });
 
+// v2 of POST route to get email address
+router.post('/register/:email', (req, res) => {
+    /*  @Flow
+        - Check if email is valid
+        - Create JWT for temporary registration use
+        - Send JWT over to email
+        - Respond with a 200 ok if no problem
+    */
+
+    const { email } = req.params;
+
+    // Check if email is valid
+
+
+    // Create JWT for the user
+    // Create a create_token function that have the registration signOption partially applied to it
+    const signOptions = {
+        issuer: 'auth-backend',
+        // subject: email,
+        audience: 'registration',
+        expiresIn: '10m', // 10min lifetime
+        algorithm: 'RS256' // Must be RS256 as using asymmetric signing
+    };
+    const token = create_token({ sub: email });
+
+    // Create HTML template and send JWT over. Either render the HTML here or request for it in mail service
+    const link = `https://localhost:3000/user/register?token=${token}`;
+
+
+    res.status(201);
+});
+
+
 // Route to get the static register page. It really depends if the app is a single page app or isit static based with links for navigation
 // If static based then this is needed, else the web-app should just update itself to show the register page without calling server
-router.get('/register', (req, res) => { });
+// router.get('/register', (req, res) => { });
 
 
 router.get('/register/:token', async (req, res) => {
@@ -103,6 +139,8 @@ router.post('/register/details', express.json({ limit: "1kb" }), (req, res) => {
         .then(() => {
             // On successful user insertion, send confirmation to user email
             // Redirect user to login page too.
+            // Should redirect be done by using response headers or requesting fron-end app to do so?
+            res.status(201); // 201 to indicate successful creation of user
         })
         .catch((err) => {
             // If there is an error, send error back to client and end the req cycle
