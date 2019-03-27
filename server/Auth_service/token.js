@@ -50,6 +50,28 @@ const merge = (obj1) => (obj2) => ({ obj1, obj2 });
 const change_signOptions = (options) => signOptions = merge(signOptions)(options);
 const change_verifyOptions = (options) => verifyOptions = merge(verifyOptions)(options);
 
+signOptions = merge(signOptions);
+verifyOptions = merge(verifyOptions);
+
+/* Instead of mutating the sign and verify options, create new objects from
+them following the immutability concept from functional paradigm
+
+Define the API/or interface first, before writing the implementation!
+
+Current interface is
+(key) => (option) => (payload)
+where external users get the interface of
+(payload)
+
+Can we make it so that the interface is
+(payload, ?options)   where options is optional
+
+then the implementation would be a function that runs
+if options
+    merge options
+(options) => (payload) // Apply final options then payload
+
+*/
 
 // In the jsonwebtoken package, the options was entered last as an optional input. Maybe try this?
 // The optional options input will be used to override the options object defined in the tokens module
@@ -64,10 +86,20 @@ const change_verifyOptions = (options) => verifyOptions = merge(verifyOptions)(o
 /*  Payload given to create_token function should only contain private claims and
     should not hold any of the pre-registered interoperable claim names and values. */
 
-// Return a function with signOption object in its closure and assign function back to create_token
-create_token = create_token(signOptions);
-// Return a function with verifyOption object in its closure and assign function back to verify
-verify_token = verify_token(verifyOptions);
+// Self invoking anonymous function for applying options into the curried functions
+(function () {
+    // Return a function with signOption object in its closure and assign function back to create_token
+    create_token = create_token(signOptions);
+    // Return a function with verifyOption object in its closure and assign function back to verify
+    verify_token = verify_token(verifyOptions);
+})()
+
+
+function create_token(payload, ...options) {
+// Change the imported method to only import jwt and then call the method to protect this namespace.
+}
+
+create_token()
 
 /*  Token verification middleware:
     To be passed in to the routes before the route handlers.
