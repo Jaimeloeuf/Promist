@@ -15,13 +15,14 @@
 
 // Dependencies
 var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = require('./jwt');
+const { } = require('')
 
 /*  User to specify the sign and verify options directly in this module for every service
     The OPTIONS MUST BE DEFINED, and they must be defined inside this module,
     thus for the jwt module, the signOptions is the first function's parameter */
 
 // Token Signing OPTIONS
-const signOptions = {
+var signOptions = {
     issuer: 'Mysoft corp',
     subject: 'some@user.com',
     // audience: 'https://Promist.io',
@@ -31,13 +32,34 @@ const signOptions = {
 };
 
 // Token verification  OPTIONS
-const verifyOptions = {
+var verifyOptions = {
     issuer: 'Mysoft corp',
     subject: 'some@user.com',
     // audience: 'https://Promist.io',
     audience: ['https://Promist.io', '.... all the services names'],
     algorithm: ['RS256'] // Unlike signOption that we used while signing new token , we will use verifyOptions to verify the shared token by client. The only difference is, here the algorithm is Array [“RS256”].
 };
+
+/*  For the above sign and verify options, it seems that sometimes, the user do not want to use
+    these, and would like to override them with different values for the properties */
+
+// Utility function for merging. Returns an object made by merging the 2 input objects
+const merge = (obj1) => (obj2) => ({ obj1, obj2 });
+
+// Version1 for shallow merge
+const change_signOptions = (options) => signOptions = merge(signOptions)(options);
+const change_verifyOptions = (options) => verifyOptions = merge(verifyOptions)(options);
+
+
+// In the jsonwebtoken package, the options was entered last as an optional input. Maybe try this?
+// The optional options input will be used to override the options object defined in the tokens module
+// This ability to change the signOptions should only be available to the services that are signing
+// the different tokens, as there would be different needs for the different tokens, however for
+// verification, the options should remain the same.
+
+// Version2 for deep merge using lodash's merge module
+
+
 
 /*  Payload given to create_token function should only contain private claims and
     should not hold any of the pre-registered interoperable claim names and values. */
