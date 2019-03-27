@@ -14,6 +14,7 @@
     
     @Todo
     - Modify the user route to be JWT protected
+    - Check if all the status code are correct
     - Create a new /user route without the userID, which basically just
       accepts a req from the client, read its JWT to check for the userID
       and then redirects the client to the route that holds their userID
@@ -21,7 +22,22 @@
 
 const express = require('express');
 const router = express.Router();
+const { verify_token } = require('../token');
 const db = require('../db/db');
+
+// Next function is not needed, as it will be called automatically by express
+async function jwt_mw(req, res) {
+    try {
+        // Verify that token is valid and replace the token in request object with this one
+        // Can we use a cookie parser to get the token into the request object instead
+        req.token = await verify_token(req.token);
+    } catch (err) {
+        // Log error to error file or logging service
+
+        // End the request
+        res.status(401).end();
+    }
+}
 
 // (READ) Route to get the user object back from the DB
 router.get('/:userID', (req, res) => {
