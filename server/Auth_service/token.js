@@ -1,9 +1,11 @@
 'use strict'; // Enforce use of strict verion of JavaScript
 
 /*	@Doc Module description:
-    This module wraps over the jwt module to apply sign and verify options into the methods
+    - This module wraps over the jwt module to apply sign and verify options into the methods
     from the jwt module before exporting the functions returned by these partial applications.
-    Essentially the sign and verify options specific to this service is defined in here.
+    - Essentially the sign and verify options specific to this service is defined in here.
+    - Payload given to create_token function should only contain private claims and
+    should not hold any of the pre-registered interoperable claim names and values.
 
     @TODO
     - Finnish writing the verification middleware
@@ -14,10 +16,7 @@
 */
 
 // Dependencies
-// var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = require('./jwt');
-// Changed imported method to import jwt and before calling methods to protect this namespace.
 const jwt = require('./jwt');
-const print = console.log;
 
 /*  User to specify the sign and verify options directly in this module for every service
     The OPTIONS MUST BE DEFINED, and they must be defined inside this module,
@@ -42,36 +41,30 @@ var verifyOptions = {
     algorithm: ['RS256'] // Unlike signOption that we used while signing new token , we will use verifyOptions to verify the shared token by client. The only difference is, here the algorithm is Array [“RS256”].
 };
 
-/*  For the above sign and verify options, it seems that sometimes, the user do not want to use
-    these, and would like to override them with different values for the properties
+/*  For above default sign and verify options, sometimes the user might want to
+    override them with different values for the properties.
 
-    Instead of mutating the sign and verify options, create new objects from
-    them following the immutability concept from functional paradigm
+    Interface is changed to 
+    Instead of mutating the sign and verify options, create new objects
 */
 // Utility function for merging. Returns an object made by merging the 2 input objects
-const merge = (obj1) => (obj2) => ({ ...obj1, ...obj2 });
+const merge = (o1) => (o2) => ({ ...o1, ...o2 });
+
+// Create another merge function for deep merge using lodash's merge module
 
 // Convert the options into partially applied functions with the original object in the closure
 // Specialized function created by partial application
 signOptions = merge(signOptions);
 verifyOptions = merge(verifyOptions);
 
-/*  Define the API/or interface first, before writing the implementation!
+/*  ^   Self invoking anonymous function for applying options into the curried functions
+    Return a function with signOption object in its closure and assign function back to create_token
+    Return a function with verifyOption object in its closure and assign function back to verify */
 
-Current interface is
-(key) => (option) => (payload)
-where external users get the interface of
-(payload)
 
-Can we make it so that the interface is
-(payload, ?options)   where options is optional
+/*  The interface is
+    (payload, ?options)   where options is optional */
 
-then the implementation would be a function that runs
-if options
-    merge options
-(options) => (payload) // Apply final options then payload
-
-*/
 
 // In the jsonwebtoken package, the options was entered last as an optional input. Maybe try this?
 // The optional options input will be used to override the options object defined in the tokens module
@@ -79,45 +72,16 @@ if options
 // the different tokens, as there would be different needs for the different tokens, however for
 // verification, the options should remain the same.
 
-// Version2 for deep merge using lodash's merge module
 
+/*  Create new create and verify token functions in this namespace to export
 
+    Always merge with options object, because default value for it is alr an empty object
+    Merge with default options object to override properties if any is passed into the function
+    by finnishing application with the partial application function
 
-/*  Payload given to create_token function should only contain private claims and
-    should not hold any of the pre-registered interoperable claim names and values. */
-
-// Self invoking anonymous function for applying options into the curried functions
-(function () {
-    // Return a function with signOption object in its closure and assign function back to create_token
-    create_token = create_token(signOptions);
-    // Return a function with verifyOption object in its closure and assign function back to verify
-    verify_token = verify_token(verifyOptions);
-}) // Stop this invocation for now
-
-
-function create_token2(payload, options = {}) {
-    // Always merge with options object, because default value for it is alr an empty object
-    // merge with the default signOptions object for overriding properties
-    // Merge by finnishing application with the partial application function
-    options = signOptions(options);
-
-    // Apply the options first before applying the payload as per the curried function
-    // Return the result directly without waiting for it as the awaiting should be done by the function caller.
-    return jwt.create_token(options)(payload);
-}
-
-/* Always merge with options object, because default value for it is alr an empty object
-merge with the default signOptions object for overriding properties
-Merge by finnishing application with the partial application function
-
-Apply the options first before applying the payload as per the curried function
-Return the result directly without waiting for it as the awaiting should be done by the function caller. */
+    The awaiting should be done by the function caller.
+*/
 const create_token = (payload, options = {}) => jwt.create_token(signOptions(options))(payload);
-
-
-function verify_token(payload, options = {}) {
-    
-}
 
 
 /*  Token verification middleware:
@@ -139,7 +103,7 @@ function v_mw(req, res, next) {
 // This is a middleware function that can be used on routes that require JWT security
 function get_token(req, res, next) {
     // Save token for subsequent functions to access token with request object after this middleware
-    req.token = extract_jwt_in_header(req);
+    req.token = jwt.extract_jwt_in_header(req);
     // End the req/res cycle if no token is sent
     if (typeof req.token === 'undefined')
         res.status(401).end(''); // If token does not exist or not sent over, respond with a 401 auth-token not provided
