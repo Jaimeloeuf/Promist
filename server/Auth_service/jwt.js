@@ -13,15 +13,8 @@
         ^ Basically use a regex to specify all case-insensitive?
         ^ Loop over all the properties in the request header and try to find a match using regex
     - Write unit test for this module
-	- look into private Keys and stuff like Asymmetric signing and verifying
-	- Create child processes too, to deal with the parsing and signing as it seems like it
-      will take quite abit of CPU power
     - Start implementing JWEs
-    - Perhaps the Public/Private key pair should be generated at a interval to change it constantly.
-
-    Edit this module so that the keys are only generated and applied in if this is used by
-    the signing authority.
-    For services that just verify, they should be able to specify to not run those stuff.
+    - Create interface or give option for the Public/Private key pair to be generated and changed repeatedly.
 
 
     If using the node-forge thing to gen public key from the private key, no need to expose the private
