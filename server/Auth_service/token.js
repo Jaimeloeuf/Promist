@@ -14,8 +14,9 @@
 */
 
 // Dependencies
-var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = require('./jwt');
-const { } = require('')
+// var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = require('./jwt');
+// Changed imported method to import jwt and before calling methods to protect this namespace.
+const jwt = require('./jwt');
 
 /*  User to specify the sign and verify options directly in this module for every service
     The OPTIONS MUST BE DEFINED, and they must be defined inside this module,
@@ -41,22 +42,20 @@ var verifyOptions = {
 };
 
 /*  For the above sign and verify options, it seems that sometimes, the user do not want to use
-    these, and would like to override them with different values for the properties */
+    these, and would like to override them with different values for the properties
 
+    Instead of mutating the sign and verify options, create new objects from
+    them following the immutability concept from functional paradigm
+*/
 // Utility function for merging. Returns an object made by merging the 2 input objects
 const merge = (obj1) => (obj2) => ({ obj1, obj2 });
 
-// Version1 for shallow merge
-const change_signOptions = (options) => signOptions = merge(signOptions)(options);
-const change_verifyOptions = (options) => verifyOptions = merge(verifyOptions)(options);
-
+// Convert the options into partially applied functions with the original object in the closure
+// Specialized function created by partial application
 signOptions = merge(signOptions);
 verifyOptions = merge(verifyOptions);
 
-/* Instead of mutating the sign and verify options, create new objects from
-them following the immutability concept from functional paradigm
-
-Define the API/or interface first, before writing the implementation!
+/*  Define the API/or interface first, before writing the implementation!
 
 Current interface is
 (key) => (option) => (payload)
@@ -95,11 +94,31 @@ if options
 })()
 
 
-function create_token(payload, ...options) {
-// Change the imported method to only import jwt and then call the method to protect this namespace.
+function create_token(payload, ...options = {}) {
+    // Always merge with options object, because default value for it is alr an empty object
+    // merge with the default signOptions object for overriding properties
+    // Merge by finnishing application with the partial application function
+    options = signOptions(options);
+
+
+    // Apply the options first before applying the payload as per the curried function
+    // Return the result directly without waiting for it as the awaiting should be done by the function caller.
+    return jwt.create_token(options)(payload);
 }
 
-create_token()
+/* Always merge with options object, because default value for it is alr an empty object
+merge with the default signOptions object for overriding properties
+Merge by finnishing application with the partial application function
+
+Apply the options first before applying the payload as per the curried function
+Return the result directly without waiting for it as the awaiting should be done by the function caller. */
+const create_token = (payload, options = {}) => jwt.create_token(signOptions(options))(payload);
+
+
+function verify_token(payload, options = {}) {
+
+}
+
 
 /*  Token verification middleware:
     To be passed in to the routes before the route handlers.
