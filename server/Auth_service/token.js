@@ -17,6 +17,7 @@
 // var { extract_jwt_in_header, create_token, verify_token, getPublicKey } = require('./jwt');
 // Changed imported method to import jwt and before calling methods to protect this namespace.
 const jwt = require('./jwt');
+const print = console.log;
 
 /*  User to specify the sign and verify options directly in this module for every service
     The OPTIONS MUST BE DEFINED, and they must be defined inside this module,
@@ -48,7 +49,7 @@ var verifyOptions = {
     them following the immutability concept from functional paradigm
 */
 // Utility function for merging. Returns an object made by merging the 2 input objects
-const merge = (obj1) => (obj2) => ({ obj1, obj2 });
+const merge = (obj1) => (obj2) => ({ ...obj1, ...obj2 });
 
 // Convert the options into partially applied functions with the original object in the closure
 // Specialized function created by partial application
@@ -91,15 +92,14 @@ if options
     create_token = create_token(signOptions);
     // Return a function with verifyOption object in its closure and assign function back to verify
     verify_token = verify_token(verifyOptions);
-})()
+}) // Stop this invocation for now
 
 
-function create_token(payload, ...options = {}) {
+function create_token2(payload, options = {}) {
     // Always merge with options object, because default value for it is alr an empty object
     // merge with the default signOptions object for overriding properties
     // Merge by finnishing application with the partial application function
     options = signOptions(options);
-
 
     // Apply the options first before applying the payload as per the curried function
     // Return the result directly without waiting for it as the awaiting should be done by the function caller.
@@ -116,7 +116,7 @@ const create_token = (payload, options = {}) => jwt.create_token(signOptions(opt
 
 
 function verify_token(payload, options = {}) {
-
+    
 }
 
 
@@ -159,5 +159,5 @@ module.exports = {
     verify_token,
 
     // Export method for getting public key with from the jwt module
-    getPublicKey
+    getPublicKey: jwt.getPublicKey
 }
