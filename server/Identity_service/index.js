@@ -9,7 +9,7 @@ const express = require('express');
 const app = express();
 
 const { port } = require('./config');
-const { print, error, JSON_string } = require('./utils');
+const { print } = require('./utils');
 const { getPublicKey } = require('./token');
 
 // Finalhandler module to deal with responding back to the client and closing the connection
@@ -19,6 +19,18 @@ const { getPublicKey } = require('./token');
 app.use('/user', require('./routes/user'));
 app.use(require('./routes/tokens'));
 app.use(require('./routes/reset_password'));
+
+
+var counter = 0;
+// At end of all routes, print the counter value out again.
+app.all('*', (req, res, next) => ++counter);
+app.use((req, res) => ++counter);
+
+/*
+    When u call next without any arguements, it will run the next middleware that matches route
+    When called with 1 arguement, it will run the next middleware that has 4 arguements, which is
+    the err, req, res, next middleware. That 1 arguement will be treated as the error.
+*/
 
 // Route to get public key for verifying JWTs signed by complimenting private key.
 // Might move the key storage to a centralized publicKey store in the future
